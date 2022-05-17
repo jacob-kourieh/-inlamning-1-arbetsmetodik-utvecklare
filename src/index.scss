@@ -1,0 +1,33 @@
+//variabel
+$font-stack: 'Helvetica', sans-serif;
+$primary-color: rgb(28, 129, 170);
+$page-margin: 2rem;
+
+
+
+// mixin (en variabel-klump)
+@mixin main {
+    background-color: $primary-color;
+    color: white;
+    font-family: $font-stack;
+    margin: $page-margin;
+
+}
+
+body,
+div#root {
+    @include main;
+}
+
+#container {
+    background-color: black;
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        li {
+            display: inline-block;
+            margin: 1rem;
+        }
+    }
+}

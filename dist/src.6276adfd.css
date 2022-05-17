@@ -1,0 +1,21 @@
+body,
+div#root {
+  background-color: #1c81aa;
+  color: white;
+  font-family: "Helvetica", sans-serif;
+  margin: 2rem; }
+
+#container {
+  background-color: black; }
+
+#container ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+
+#container ul li {
+  display: inline-block;
+  margin: 1rem; }
+
+
+/*# sourceMappingURL=/src.6276adfd.css.map */
