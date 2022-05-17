@@ -1,4 +1,4 @@
-![poster](/poster.png)
+![poster](./poster.png)
 # Interval App - for all you timing needs
 
 ## Bakgrund
