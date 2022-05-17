@@ -33084,9 +33084,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var root = _client.default.createRoot(document.getElementById('root'));
 
-root.render(_react.default.createElement(_react.default.StrictMode, null, _react.default.createElement("article", {
-  id: 'container'
-}, _react.default.createElement("h1", null, "HAJ"), _react.default.createElement("ul", null, _react.default.createElement("li", null, "Angel Shark"), _react.default.createElement("li", null, "Hammerhead shark"), _react.default.createElement("li", null, "Great White Shark"), _react.default.createElement("li", null, "Bull Shark"))), "  "));
+root.render(_react.default.createElement(_react.default.StrictMode, null));
 },{"react":"../../node_modules/react/index.js","react-dom/client":"../../node_modules/react-dom/client.js","./index.css":"../index.css"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -33115,7 +33113,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58945" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54627" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
