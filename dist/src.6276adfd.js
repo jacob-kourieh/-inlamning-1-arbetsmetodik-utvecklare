@@ -33071,7 +33071,2642 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../index.tsx":[function(require,module,exports) {
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../../node_modules/@babel/runtime/helpers/esm/extends.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _extends;
+
+function _extends() {
+  exports.default = _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+},{}],"../../node_modules/history/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Action = void 0;
+exports.createBrowserHistory = createBrowserHistory;
+exports.createHashHistory = createHashHistory;
+exports.createMemoryHistory = createMemoryHistory;
+exports.createPath = createPath;
+exports.parsePath = parsePath;
+
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/esm/extends"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Actions represent the type of change to a location value.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#action
+ */
+var Action;
+exports.Action = Action;
+
+(function (Action) {
+  /**
+   * A POP indicates a change to an arbitrary index in the history stack, such
+   * as a back or forward navigation. It does not describe the direction of the
+   * navigation, only that the current index changed.
+   *
+   * Note: This is the default action for newly created history objects.
+   */
+  Action["Pop"] = "POP";
+  /**
+   * A PUSH indicates a new entry being added to the history stack, such as when
+   * a link is clicked and a new page loads. When this happens, all subsequent
+   * entries in the stack are lost.
+   */
+
+  Action["Push"] = "PUSH";
+  /**
+   * A REPLACE indicates the entry at the current index in the history stack
+   * being replaced by a new one.
+   */
+
+  Action["Replace"] = "REPLACE";
+})(Action || (exports.Action = Action = {}));
+
+var readOnly = "development" !== "production" ? function (obj) {
+  return Object.freeze(obj);
+} : function (obj) {
+  return obj;
+};
+
+function warning(cond, message) {
+  if (!cond) {
+    // eslint-disable-next-line no-console
+    if (typeof console !== 'undefined') console.warn(message);
+
+    try {
+      // Welcome to debugging history!
+      //
+      // This error is thrown as a convenience so you can more easily
+      // find the source for a warning that appears in the console by
+      // enabling "pause on exceptions" in your JavaScript debugger.
+      throw new Error(message); // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+}
+
+var BeforeUnloadEventType = 'beforeunload';
+var HashChangeEventType = 'hashchange';
+var PopStateEventType = 'popstate';
+/**
+ * Browser history stores the location in regular URLs. This is the standard for
+ * most web apps, but it requires some configuration on the server to ensure you
+ * serve the same app at multiple URLs.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#createbrowserhistory
+ */
+
+function createBrowserHistory(options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  var _options = options,
+      _options$window = _options.window,
+      window = _options$window === void 0 ? document.defaultView : _options$window;
+  var globalHistory = window.history;
+
+  function getIndexAndLocation() {
+    var _window$location = window.location,
+        pathname = _window$location.pathname,
+        search = _window$location.search,
+        hash = _window$location.hash;
+    var state = globalHistory.state || {};
+    return [state.idx, readOnly({
+      pathname: pathname,
+      search: search,
+      hash: hash,
+      state: state.usr || null,
+      key: state.key || 'default'
+    })];
+  }
+
+  var blockedPopTx = null;
+
+  function handlePop() {
+    if (blockedPopTx) {
+      blockers.call(blockedPopTx);
+      blockedPopTx = null;
+    } else {
+      var nextAction = Action.Pop;
+
+      var _getIndexAndLocation = getIndexAndLocation(),
+          nextIndex = _getIndexAndLocation[0],
+          nextLocation = _getIndexAndLocation[1];
+
+      if (blockers.length) {
+        if (nextIndex != null) {
+          var delta = index - nextIndex;
+
+          if (delta) {
+            // Revert the POP
+            blockedPopTx = {
+              action: nextAction,
+              location: nextLocation,
+              retry: function retry() {
+                go(delta * -1);
+              }
+            };
+            go(delta);
+          }
+        } else {
+          // Trying to POP to a location with no index. We did not create
+          // this location, so we can't effectively block the navigation.
+          "development" !== "production" ? warning(false, // TODO: Write up a doc that explains our blocking strategy in
+          // detail and link to it here so people can understand better what
+          // is going on and how to avoid it.
+          "You are trying to block a POP navigation to a location that was not " + "created by the history library. The block will fail silently in " + "production, but in general you should do all navigation with the " + "history library (instead of using window.history.pushState directly) " + "to avoid this situation.") : void 0;
+        }
+      } else {
+        applyTx(nextAction);
+      }
+    }
+  }
+
+  window.addEventListener(PopStateEventType, handlePop);
+  var action = Action.Pop;
+
+  var _getIndexAndLocation2 = getIndexAndLocation(),
+      index = _getIndexAndLocation2[0],
+      location = _getIndexAndLocation2[1];
+
+  var listeners = createEvents();
+  var blockers = createEvents();
+
+  if (index == null) {
+    index = 0;
+    globalHistory.replaceState((0, _extends2.default)({}, globalHistory.state, {
+      idx: index
+    }), '');
+  }
+
+  function createHref(to) {
+    return typeof to === 'string' ? to : createPath(to);
+  } // state defaults to `null` because `window.history.state` does
+
+
+  function getNextLocation(to, state) {
+    if (state === void 0) {
+      state = null;
+    }
+
+    return readOnly((0, _extends2.default)({
+      pathname: location.pathname,
+      hash: '',
+      search: ''
+    }, typeof to === 'string' ? parsePath(to) : to, {
+      state: state,
+      key: createKey()
+    }));
+  }
+
+  function getHistoryStateAndUrl(nextLocation, index) {
+    return [{
+      usr: nextLocation.state,
+      key: nextLocation.key,
+      idx: index
+    }, createHref(nextLocation)];
+  }
+
+  function allowTx(action, location, retry) {
+    return !blockers.length || (blockers.call({
+      action: action,
+      location: location,
+      retry: retry
+    }), false);
+  }
+
+  function applyTx(nextAction) {
+    action = nextAction;
+
+    var _getIndexAndLocation3 = getIndexAndLocation();
+
+    index = _getIndexAndLocation3[0];
+    location = _getIndexAndLocation3[1];
+    listeners.call({
+      action: action,
+      location: location
+    });
+  }
+
+  function push(to, state) {
+    var nextAction = Action.Push;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      push(to, state);
+    }
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      var _getHistoryStateAndUr = getHistoryStateAndUrl(nextLocation, index + 1),
+          historyState = _getHistoryStateAndUr[0],
+          url = _getHistoryStateAndUr[1]; // TODO: Support forced reloading
+      // try...catch because iOS limits us to 100 pushState calls :/
+
+
+      try {
+        globalHistory.pushState(historyState, '', url);
+      } catch (error) {
+        // They are going to lose state here, but there is no real
+        // way to warn them about it since the page will refresh...
+        window.location.assign(url);
+      }
+
+      applyTx(nextAction);
+    }
+  }
+
+  function replace(to, state) {
+    var nextAction = Action.Replace;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      replace(to, state);
+    }
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      var _getHistoryStateAndUr2 = getHistoryStateAndUrl(nextLocation, index),
+          historyState = _getHistoryStateAndUr2[0],
+          url = _getHistoryStateAndUr2[1]; // TODO: Support forced reloading
+
+
+      globalHistory.replaceState(historyState, '', url);
+      applyTx(nextAction);
+    }
+  }
+
+  function go(delta) {
+    globalHistory.go(delta);
+  }
+
+  var history = {
+    get action() {
+      return action;
+    },
+
+    get location() {
+      return location;
+    },
+
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    back: function back() {
+      go(-1);
+    },
+    forward: function forward() {
+      go(1);
+    },
+    listen: function listen(listener) {
+      return listeners.push(listener);
+    },
+    block: function block(blocker) {
+      var unblock = blockers.push(blocker);
+
+      if (blockers.length === 1) {
+        window.addEventListener(BeforeUnloadEventType, promptBeforeUnload);
+      }
+
+      return function () {
+        unblock(); // Remove the beforeunload listener so the document may
+        // still be salvageable in the pagehide event.
+        // See https://html.spec.whatwg.org/#unloading-documents
+
+        if (!blockers.length) {
+          window.removeEventListener(BeforeUnloadEventType, promptBeforeUnload);
+        }
+      };
+    }
+  };
+  return history;
+}
+/**
+ * Hash history stores the location in window.location.hash. This makes it ideal
+ * for situations where you don't want to send the location to the server for
+ * some reason, either because you do cannot configure it or the URL space is
+ * reserved for something else.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#createhashhistory
+ */
+
+
+function createHashHistory(options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  var _options2 = options,
+      _options2$window = _options2.window,
+      window = _options2$window === void 0 ? document.defaultView : _options2$window;
+  var globalHistory = window.history;
+
+  function getIndexAndLocation() {
+    var _parsePath = parsePath(window.location.hash.substr(1)),
+        _parsePath$pathname = _parsePath.pathname,
+        pathname = _parsePath$pathname === void 0 ? '/' : _parsePath$pathname,
+        _parsePath$search = _parsePath.search,
+        search = _parsePath$search === void 0 ? '' : _parsePath$search,
+        _parsePath$hash = _parsePath.hash,
+        hash = _parsePath$hash === void 0 ? '' : _parsePath$hash;
+
+    var state = globalHistory.state || {};
+    return [state.idx, readOnly({
+      pathname: pathname,
+      search: search,
+      hash: hash,
+      state: state.usr || null,
+      key: state.key || 'default'
+    })];
+  }
+
+  var blockedPopTx = null;
+
+  function handlePop() {
+    if (blockedPopTx) {
+      blockers.call(blockedPopTx);
+      blockedPopTx = null;
+    } else {
+      var nextAction = Action.Pop;
+
+      var _getIndexAndLocation4 = getIndexAndLocation(),
+          nextIndex = _getIndexAndLocation4[0],
+          nextLocation = _getIndexAndLocation4[1];
+
+      if (blockers.length) {
+        if (nextIndex != null) {
+          var delta = index - nextIndex;
+
+          if (delta) {
+            // Revert the POP
+            blockedPopTx = {
+              action: nextAction,
+              location: nextLocation,
+              retry: function retry() {
+                go(delta * -1);
+              }
+            };
+            go(delta);
+          }
+        } else {
+          // Trying to POP to a location with no index. We did not create
+          // this location, so we can't effectively block the navigation.
+          "development" !== "production" ? warning(false, // TODO: Write up a doc that explains our blocking strategy in
+          // detail and link to it here so people can understand better
+          // what is going on and how to avoid it.
+          "You are trying to block a POP navigation to a location that was not " + "created by the history library. The block will fail silently in " + "production, but in general you should do all navigation with the " + "history library (instead of using window.history.pushState directly) " + "to avoid this situation.") : void 0;
+        }
+      } else {
+        applyTx(nextAction);
+      }
+    }
+  }
+
+  window.addEventListener(PopStateEventType, handlePop); // popstate does not fire on hashchange in IE 11 and old (trident) Edge
+  // https://developer.mozilla.org/de/docs/Web/API/Window/popstate_event
+
+  window.addEventListener(HashChangeEventType, function () {
+    var _getIndexAndLocation5 = getIndexAndLocation(),
+        nextLocation = _getIndexAndLocation5[1]; // Ignore extraneous hashchange events.
+
+
+    if (createPath(nextLocation) !== createPath(location)) {
+      handlePop();
+    }
+  });
+  var action = Action.Pop;
+
+  var _getIndexAndLocation6 = getIndexAndLocation(),
+      index = _getIndexAndLocation6[0],
+      location = _getIndexAndLocation6[1];
+
+  var listeners = createEvents();
+  var blockers = createEvents();
+
+  if (index == null) {
+    index = 0;
+    globalHistory.replaceState((0, _extends2.default)({}, globalHistory.state, {
+      idx: index
+    }), '');
+  }
+
+  function getBaseHref() {
+    var base = document.querySelector('base');
+    var href = '';
+
+    if (base && base.getAttribute('href')) {
+      var url = window.location.href;
+      var hashIndex = url.indexOf('#');
+      href = hashIndex === -1 ? url : url.slice(0, hashIndex);
+    }
+
+    return href;
+  }
+
+  function createHref(to) {
+    return getBaseHref() + '#' + (typeof to === 'string' ? to : createPath(to));
+  }
+
+  function getNextLocation(to, state) {
+    if (state === void 0) {
+      state = null;
+    }
+
+    return readOnly((0, _extends2.default)({
+      pathname: location.pathname,
+      hash: '',
+      search: ''
+    }, typeof to === 'string' ? parsePath(to) : to, {
+      state: state,
+      key: createKey()
+    }));
+  }
+
+  function getHistoryStateAndUrl(nextLocation, index) {
+    return [{
+      usr: nextLocation.state,
+      key: nextLocation.key,
+      idx: index
+    }, createHref(nextLocation)];
+  }
+
+  function allowTx(action, location, retry) {
+    return !blockers.length || (blockers.call({
+      action: action,
+      location: location,
+      retry: retry
+    }), false);
+  }
+
+  function applyTx(nextAction) {
+    action = nextAction;
+
+    var _getIndexAndLocation7 = getIndexAndLocation();
+
+    index = _getIndexAndLocation7[0];
+    location = _getIndexAndLocation7[1];
+    listeners.call({
+      action: action,
+      location: location
+    });
+  }
+
+  function push(to, state) {
+    var nextAction = Action.Push;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      push(to, state);
+    }
+
+    "development" !== "production" ? warning(nextLocation.pathname.charAt(0) === '/', "Relative pathnames are not supported in hash history.push(" + JSON.stringify(to) + ")") : void 0;
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      var _getHistoryStateAndUr3 = getHistoryStateAndUrl(nextLocation, index + 1),
+          historyState = _getHistoryStateAndUr3[0],
+          url = _getHistoryStateAndUr3[1]; // TODO: Support forced reloading
+      // try...catch because iOS limits us to 100 pushState calls :/
+
+
+      try {
+        globalHistory.pushState(historyState, '', url);
+      } catch (error) {
+        // They are going to lose state here, but there is no real
+        // way to warn them about it since the page will refresh...
+        window.location.assign(url);
+      }
+
+      applyTx(nextAction);
+    }
+  }
+
+  function replace(to, state) {
+    var nextAction = Action.Replace;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      replace(to, state);
+    }
+
+    "development" !== "production" ? warning(nextLocation.pathname.charAt(0) === '/', "Relative pathnames are not supported in hash history.replace(" + JSON.stringify(to) + ")") : void 0;
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      var _getHistoryStateAndUr4 = getHistoryStateAndUrl(nextLocation, index),
+          historyState = _getHistoryStateAndUr4[0],
+          url = _getHistoryStateAndUr4[1]; // TODO: Support forced reloading
+
+
+      globalHistory.replaceState(historyState, '', url);
+      applyTx(nextAction);
+    }
+  }
+
+  function go(delta) {
+    globalHistory.go(delta);
+  }
+
+  var history = {
+    get action() {
+      return action;
+    },
+
+    get location() {
+      return location;
+    },
+
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    back: function back() {
+      go(-1);
+    },
+    forward: function forward() {
+      go(1);
+    },
+    listen: function listen(listener) {
+      return listeners.push(listener);
+    },
+    block: function block(blocker) {
+      var unblock = blockers.push(blocker);
+
+      if (blockers.length === 1) {
+        window.addEventListener(BeforeUnloadEventType, promptBeforeUnload);
+      }
+
+      return function () {
+        unblock(); // Remove the beforeunload listener so the document may
+        // still be salvageable in the pagehide event.
+        // See https://html.spec.whatwg.org/#unloading-documents
+
+        if (!blockers.length) {
+          window.removeEventListener(BeforeUnloadEventType, promptBeforeUnload);
+        }
+      };
+    }
+  };
+  return history;
+}
+/**
+ * Memory history stores the current location in memory. It is designed for use
+ * in stateful non-browser environments like tests and React Native.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#creatememoryhistory
+ */
+
+
+function createMemoryHistory(options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  var _options3 = options,
+      _options3$initialEntr = _options3.initialEntries,
+      initialEntries = _options3$initialEntr === void 0 ? ['/'] : _options3$initialEntr,
+      initialIndex = _options3.initialIndex;
+  var entries = initialEntries.map(function (entry) {
+    var location = readOnly((0, _extends2.default)({
+      pathname: '/',
+      search: '',
+      hash: '',
+      state: null,
+      key: createKey()
+    }, typeof entry === 'string' ? parsePath(entry) : entry));
+    "development" !== "production" ? warning(location.pathname.charAt(0) === '/', "Relative pathnames are not supported in createMemoryHistory({ initialEntries }) (invalid entry: " + JSON.stringify(entry) + ")") : void 0;
+    return location;
+  });
+  var index = clamp(initialIndex == null ? entries.length - 1 : initialIndex, 0, entries.length - 1);
+  var action = Action.Pop;
+  var location = entries[index];
+  var listeners = createEvents();
+  var blockers = createEvents();
+
+  function createHref(to) {
+    return typeof to === 'string' ? to : createPath(to);
+  }
+
+  function getNextLocation(to, state) {
+    if (state === void 0) {
+      state = null;
+    }
+
+    return readOnly((0, _extends2.default)({
+      pathname: location.pathname,
+      search: '',
+      hash: ''
+    }, typeof to === 'string' ? parsePath(to) : to, {
+      state: state,
+      key: createKey()
+    }));
+  }
+
+  function allowTx(action, location, retry) {
+    return !blockers.length || (blockers.call({
+      action: action,
+      location: location,
+      retry: retry
+    }), false);
+  }
+
+  function applyTx(nextAction, nextLocation) {
+    action = nextAction;
+    location = nextLocation;
+    listeners.call({
+      action: action,
+      location: location
+    });
+  }
+
+  function push(to, state) {
+    var nextAction = Action.Push;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      push(to, state);
+    }
+
+    "development" !== "production" ? warning(location.pathname.charAt(0) === '/', "Relative pathnames are not supported in memory history.push(" + JSON.stringify(to) + ")") : void 0;
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      index += 1;
+      entries.splice(index, entries.length, nextLocation);
+      applyTx(nextAction, nextLocation);
+    }
+  }
+
+  function replace(to, state) {
+    var nextAction = Action.Replace;
+    var nextLocation = getNextLocation(to, state);
+
+    function retry() {
+      replace(to, state);
+    }
+
+    "development" !== "production" ? warning(location.pathname.charAt(0) === '/', "Relative pathnames are not supported in memory history.replace(" + JSON.stringify(to) + ")") : void 0;
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      entries[index] = nextLocation;
+      applyTx(nextAction, nextLocation);
+    }
+  }
+
+  function go(delta) {
+    var nextIndex = clamp(index + delta, 0, entries.length - 1);
+    var nextAction = Action.Pop;
+    var nextLocation = entries[nextIndex];
+
+    function retry() {
+      go(delta);
+    }
+
+    if (allowTx(nextAction, nextLocation, retry)) {
+      index = nextIndex;
+      applyTx(nextAction, nextLocation);
+    }
+  }
+
+  var history = {
+    get index() {
+      return index;
+    },
+
+    get action() {
+      return action;
+    },
+
+    get location() {
+      return location;
+    },
+
+    createHref: createHref,
+    push: push,
+    replace: replace,
+    go: go,
+    back: function back() {
+      go(-1);
+    },
+    forward: function forward() {
+      go(1);
+    },
+    listen: function listen(listener) {
+      return listeners.push(listener);
+    },
+    block: function block(blocker) {
+      return blockers.push(blocker);
+    }
+  };
+  return history;
+} ////////////////////////////////////////////////////////////////////////////////
+// UTILS
+////////////////////////////////////////////////////////////////////////////////
+
+
+function clamp(n, lowerBound, upperBound) {
+  return Math.min(Math.max(n, lowerBound), upperBound);
+}
+
+function promptBeforeUnload(event) {
+  // Cancel the event.
+  event.preventDefault(); // Chrome (and legacy IE) requires returnValue to be set.
+
+  event.returnValue = '';
+}
+
+function createEvents() {
+  var handlers = [];
+  return {
+    get length() {
+      return handlers.length;
+    },
+
+    push: function push(fn) {
+      handlers.push(fn);
+      return function () {
+        handlers = handlers.filter(function (handler) {
+          return handler !== fn;
+        });
+      };
+    },
+    call: function call(arg) {
+      handlers.forEach(function (fn) {
+        return fn && fn(arg);
+      });
+    }
+  };
+}
+
+function createKey() {
+  return Math.random().toString(36).substr(2, 8);
+}
+/**
+ * Creates a string URL path from the given pathname, search, and hash components.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#createpath
+ */
+
+
+function createPath(_ref) {
+  var _ref$pathname = _ref.pathname,
+      pathname = _ref$pathname === void 0 ? '/' : _ref$pathname,
+      _ref$search = _ref.search,
+      search = _ref$search === void 0 ? '' : _ref$search,
+      _ref$hash = _ref.hash,
+      hash = _ref$hash === void 0 ? '' : _ref$hash;
+  if (search && search !== '?') pathname += search.charAt(0) === '?' ? search : '?' + search;
+  if (hash && hash !== '#') pathname += hash.charAt(0) === '#' ? hash : '#' + hash;
+  return pathname;
+}
+/**
+ * Parses a string URL path into its separate pathname, search, and hash components.
+ *
+ * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#parsepath
+ */
+
+
+function parsePath(path) {
+  var parsedPath = {};
+
+  if (path) {
+    var hashIndex = path.indexOf('#');
+
+    if (hashIndex >= 0) {
+      parsedPath.hash = path.substr(hashIndex);
+      path = path.substr(0, hashIndex);
+    }
+
+    var searchIndex = path.indexOf('?');
+
+    if (searchIndex >= 0) {
+      parsedPath.search = path.substr(searchIndex);
+      path = path.substr(0, searchIndex);
+    }
+
+    if (path) {
+      parsedPath.pathname = path;
+    }
+  }
+
+  return parsedPath;
+}
+},{"@babel/runtime/helpers/esm/extends":"../../node_modules/@babel/runtime/helpers/esm/extends.js"}],"../../node_modules/react-router/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MemoryRouter = MemoryRouter;
+exports.Navigate = Navigate;
+Object.defineProperty(exports, "NavigationType", {
+  enumerable: true,
+  get: function () {
+    return _history.Action;
+  }
+});
+exports.Outlet = Outlet;
+exports.Route = Route;
+exports.Router = Router;
+exports.Routes = Routes;
+exports.UNSAFE_RouteContext = exports.UNSAFE_NavigationContext = exports.UNSAFE_LocationContext = void 0;
+Object.defineProperty(exports, "createPath", {
+  enumerable: true,
+  get: function () {
+    return _history.createPath;
+  }
+});
+exports.createRoutesFromChildren = createRoutesFromChildren;
+exports.generatePath = generatePath;
+exports.matchPath = matchPath;
+exports.matchRoutes = matchRoutes;
+Object.defineProperty(exports, "parsePath", {
+  enumerable: true,
+  get: function () {
+    return _history.parsePath;
+  }
+});
+exports.renderMatches = renderMatches;
+exports.resolvePath = resolvePath;
+exports.useHref = useHref;
+exports.useInRouterContext = useInRouterContext;
+exports.useLocation = useLocation;
+exports.useMatch = useMatch;
+exports.useNavigate = useNavigate;
+exports.useNavigationType = useNavigationType;
+exports.useOutlet = useOutlet;
+exports.useOutletContext = useOutletContext;
+exports.useParams = useParams;
+exports.useResolvedPath = useResolvedPath;
+exports.useRoutes = useRoutes;
+
+var _history = require("history");
+
+var _react = require("react");
+
+/**
+ * React Router v6.3.0
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+const NavigationContext = /*#__PURE__*/(0, _react.createContext)(null);
+exports.UNSAFE_NavigationContext = NavigationContext;
+
+if ("development" !== "production") {
+  NavigationContext.displayName = "Navigation";
+}
+
+const LocationContext = /*#__PURE__*/(0, _react.createContext)(null);
+exports.UNSAFE_LocationContext = LocationContext;
+
+if ("development" !== "production") {
+  LocationContext.displayName = "Location";
+}
+
+const RouteContext = /*#__PURE__*/(0, _react.createContext)({
+  outlet: null,
+  matches: []
+});
+exports.UNSAFE_RouteContext = RouteContext;
+
+if ("development" !== "production") {
+  RouteContext.displayName = "Route";
+}
+
+function invariant(cond, message) {
+  if (!cond) throw new Error(message);
+}
+
+function warning(cond, message) {
+  if (!cond) {
+    // eslint-disable-next-line no-console
+    if (typeof console !== "undefined") console.warn(message);
+
+    try {
+      // Welcome to debugging React Router!
+      //
+      // This error is thrown as a convenience so you can more easily
+      // find the source for a warning that appears in the console by
+      // enabling "pause on exceptions" in your JavaScript debugger.
+      throw new Error(message); // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+}
+
+const alreadyWarned = {};
+
+function warningOnce(key, cond, message) {
+  if (!cond && !alreadyWarned[key]) {
+    alreadyWarned[key] = true;
+    "development" !== "production" ? warning(false, message) : void 0;
+  }
+}
+/**
+ * Returns a path with params interpolated.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#generatepath
+ */
+
+
+function generatePath(path, params) {
+  if (params === void 0) {
+    params = {};
+  }
+
+  return path.replace(/:(\w+)/g, (_, key) => {
+    !(params[key] != null) ? "development" !== "production" ? invariant(false, "Missing \":" + key + "\" param") : invariant(false) : void 0;
+    return params[key];
+  }).replace(/\/*\*$/, _ => params["*"] == null ? "" : params["*"].replace(/^\/*/, "/"));
+}
+/**
+ * A RouteMatch contains info about how a route matched a URL.
+ */
+
+/**
+ * Matches the given routes to a location and returns the match data.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#matchroutes
+ */
+
+
+function matchRoutes(routes, locationArg, basename) {
+  if (basename === void 0) {
+    basename = "/";
+  }
+
+  let location = typeof locationArg === "string" ? (0, _history.parsePath)(locationArg) : locationArg;
+  let pathname = stripBasename(location.pathname || "/", basename);
+
+  if (pathname == null) {
+    return null;
+  }
+
+  let branches = flattenRoutes(routes);
+  rankRouteBranches(branches);
+  let matches = null;
+
+  for (let i = 0; matches == null && i < branches.length; ++i) {
+    matches = matchRouteBranch(branches[i], pathname);
+  }
+
+  return matches;
+}
+
+function flattenRoutes(routes, branches, parentsMeta, parentPath) {
+  if (branches === void 0) {
+    branches = [];
+  }
+
+  if (parentsMeta === void 0) {
+    parentsMeta = [];
+  }
+
+  if (parentPath === void 0) {
+    parentPath = "";
+  }
+
+  routes.forEach((route, index) => {
+    let meta = {
+      relativePath: route.path || "",
+      caseSensitive: route.caseSensitive === true,
+      childrenIndex: index,
+      route
+    };
+
+    if (meta.relativePath.startsWith("/")) {
+      !meta.relativePath.startsWith(parentPath) ? "development" !== "production" ? invariant(false, "Absolute route path \"" + meta.relativePath + "\" nested under path " + ("\"" + parentPath + "\" is not valid. An absolute child route path ") + "must start with the combined path of all its parent routes.") : invariant(false) : void 0;
+      meta.relativePath = meta.relativePath.slice(parentPath.length);
+    }
+
+    let path = joinPaths([parentPath, meta.relativePath]);
+    let routesMeta = parentsMeta.concat(meta); // Add the children before adding this route to the array so we traverse the
+    // route tree depth-first and child routes appear before their parents in
+    // the "flattened" version.
+
+    if (route.children && route.children.length > 0) {
+      !(route.index !== true) ? "development" !== "production" ? invariant(false, "Index routes must not have child routes. Please remove " + ("all child routes from route path \"" + path + "\".")) : invariant(false) : void 0;
+      flattenRoutes(route.children, branches, routesMeta, path);
+    } // Routes without a path shouldn't ever match by themselves unless they are
+    // index routes, so don't add them to the list of possible branches.
+
+
+    if (route.path == null && !route.index) {
+      return;
+    }
+
+    branches.push({
+      path,
+      score: computeScore(path, route.index),
+      routesMeta
+    });
+  });
+  return branches;
+}
+
+function rankRouteBranches(branches) {
+  branches.sort((a, b) => a.score !== b.score ? b.score - a.score // Higher score first
+  : compareIndexes(a.routesMeta.map(meta => meta.childrenIndex), b.routesMeta.map(meta => meta.childrenIndex)));
+}
+
+const paramRe = /^:\w+$/;
+const dynamicSegmentValue = 3;
+const indexRouteValue = 2;
+const emptySegmentValue = 1;
+const staticSegmentValue = 10;
+const splatPenalty = -2;
+
+const isSplat = s => s === "*";
+
+function computeScore(path, index) {
+  let segments = path.split("/");
+  let initialScore = segments.length;
+
+  if (segments.some(isSplat)) {
+    initialScore += splatPenalty;
+  }
+
+  if (index) {
+    initialScore += indexRouteValue;
+  }
+
+  return segments.filter(s => !isSplat(s)).reduce((score, segment) => score + (paramRe.test(segment) ? dynamicSegmentValue : segment === "" ? emptySegmentValue : staticSegmentValue), initialScore);
+}
+
+function compareIndexes(a, b) {
+  let siblings = a.length === b.length && a.slice(0, -1).every((n, i) => n === b[i]);
+  return siblings ? // If two routes are siblings, we should try to match the earlier sibling
+  // first. This allows people to have fine-grained control over the matching
+  // behavior by simply putting routes with identical paths in the order they
+  // want them tried.
+  a[a.length - 1] - b[b.length - 1] : // Otherwise, it doesn't really make sense to rank non-siblings by index,
+  // so they sort equally.
+  0;
+}
+
+function matchRouteBranch(branch, pathname) {
+  let {
+    routesMeta
+  } = branch;
+  let matchedParams = {};
+  let matchedPathname = "/";
+  let matches = [];
+
+  for (let i = 0; i < routesMeta.length; ++i) {
+    let meta = routesMeta[i];
+    let end = i === routesMeta.length - 1;
+    let remainingPathname = matchedPathname === "/" ? pathname : pathname.slice(matchedPathname.length) || "/";
+    let match = matchPath({
+      path: meta.relativePath,
+      caseSensitive: meta.caseSensitive,
+      end
+    }, remainingPathname);
+    if (!match) return null;
+    Object.assign(matchedParams, match.params);
+    let route = meta.route;
+    matches.push({
+      params: matchedParams,
+      pathname: joinPaths([matchedPathname, match.pathname]),
+      pathnameBase: normalizePathname(joinPaths([matchedPathname, match.pathnameBase])),
+      route
+    });
+
+    if (match.pathnameBase !== "/") {
+      matchedPathname = joinPaths([matchedPathname, match.pathnameBase]);
+    }
+  }
+
+  return matches;
+}
+/**
+ * A PathPattern is used to match on some portion of a URL pathname.
+ */
+
+/**
+ * Performs pattern matching on a URL pathname and returns information about
+ * the match.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#matchpath
+ */
+
+
+function matchPath(pattern, pathname) {
+  if (typeof pattern === "string") {
+    pattern = {
+      path: pattern,
+      caseSensitive: false,
+      end: true
+    };
+  }
+
+  let [matcher, paramNames] = compilePath(pattern.path, pattern.caseSensitive, pattern.end);
+  let match = pathname.match(matcher);
+  if (!match) return null;
+  let matchedPathname = match[0];
+  let pathnameBase = matchedPathname.replace(/(.)\/+$/, "$1");
+  let captureGroups = match.slice(1);
+  let params = paramNames.reduce((memo, paramName, index) => {
+    // We need to compute the pathnameBase here using the raw splat value
+    // instead of using params["*"] later because it will be decoded then
+    if (paramName === "*") {
+      let splatValue = captureGroups[index] || "";
+      pathnameBase = matchedPathname.slice(0, matchedPathname.length - splatValue.length).replace(/(.)\/+$/, "$1");
+    }
+
+    memo[paramName] = safelyDecodeURIComponent(captureGroups[index] || "", paramName);
+    return memo;
+  }, {});
+  return {
+    params,
+    pathname: matchedPathname,
+    pathnameBase,
+    pattern
+  };
+}
+
+function compilePath(path, caseSensitive, end) {
+  if (caseSensitive === void 0) {
+    caseSensitive = false;
+  }
+
+  if (end === void 0) {
+    end = true;
+  }
+
+  "development" !== "production" ? warning(path === "*" || !path.endsWith("*") || path.endsWith("/*"), "Route path \"" + path + "\" will be treated as if it were " + ("\"" + path.replace(/\*$/, "/*") + "\" because the `*` character must ") + "always follow a `/` in the pattern. To get rid of this warning, " + ("please change the route path to \"" + path.replace(/\*$/, "/*") + "\".")) : void 0;
+  let paramNames = [];
+  let regexpSource = "^" + path.replace(/\/*\*?$/, "") // Ignore trailing / and /*, we'll handle it below
+  .replace(/^\/*/, "/") // Make sure it has a leading /
+  .replace(/[\\.*+^$?{}|()[\]]/g, "\\$&") // Escape special regex chars
+  .replace(/:(\w+)/g, (_, paramName) => {
+    paramNames.push(paramName);
+    return "([^\\/]+)";
+  });
+
+  if (path.endsWith("*")) {
+    paramNames.push("*");
+    regexpSource += path === "*" || path === "/*" ? "(.*)$" // Already matched the initial /, just match the rest
+    : "(?:\\/(.+)|\\/*)$"; // Don't include the / in params["*"]
+  } else {
+    regexpSource += end ? "\\/*$" // When matching to the end, ignore trailing slashes
+    : // Otherwise, match a word boundary or a proceeding /. The word boundary restricts
+    // parent routes to matching only their own words and nothing more, e.g. parent
+    // route "/home" should not match "/home2".
+    // Additionally, allow paths starting with `.`, `-`, `~`, and url-encoded entities,
+    // but do not consume the character in the matched path so they can match against
+    // nested paths.
+    "(?:(?=[.~-]|%[0-9A-F]{2})|\\b|\\/|$)";
+  }
+
+  let matcher = new RegExp(regexpSource, caseSensitive ? undefined : "i");
+  return [matcher, paramNames];
+}
+
+function safelyDecodeURIComponent(value, paramName) {
+  try {
+    return decodeURIComponent(value);
+  } catch (error) {
+    "development" !== "production" ? warning(false, "The value for the URL param \"" + paramName + "\" will not be decoded because" + (" the string \"" + value + "\" is a malformed URL segment. This is probably") + (" due to a bad percent encoding (" + error + ").")) : void 0;
+    return value;
+  }
+}
+/**
+ * Returns a resolved path object relative to the given pathname.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#resolvepath
+ */
+
+
+function resolvePath(to, fromPathname) {
+  if (fromPathname === void 0) {
+    fromPathname = "/";
+  }
+
+  let {
+    pathname: toPathname,
+    search = "",
+    hash = ""
+  } = typeof to === "string" ? (0, _history.parsePath)(to) : to;
+  let pathname = toPathname ? toPathname.startsWith("/") ? toPathname : resolvePathname(toPathname, fromPathname) : fromPathname;
+  return {
+    pathname,
+    search: normalizeSearch(search),
+    hash: normalizeHash(hash)
+  };
+}
+
+function resolvePathname(relativePath, fromPathname) {
+  let segments = fromPathname.replace(/\/+$/, "").split("/");
+  let relativeSegments = relativePath.split("/");
+  relativeSegments.forEach(segment => {
+    if (segment === "..") {
+      // Keep the root "" segment so the pathname starts at /
+      if (segments.length > 1) segments.pop();
+    } else if (segment !== ".") {
+      segments.push(segment);
+    }
+  });
+  return segments.length > 1 ? segments.join("/") : "/";
+}
+
+function resolveTo(toArg, routePathnames, locationPathname) {
+  let to = typeof toArg === "string" ? (0, _history.parsePath)(toArg) : toArg;
+  let toPathname = toArg === "" || to.pathname === "" ? "/" : to.pathname; // If a pathname is explicitly provided in `to`, it should be relative to the
+  // route context. This is explained in `Note on `<Link to>` values` in our
+  // migration guide from v5 as a means of disambiguation between `to` values
+  // that begin with `/` and those that do not. However, this is problematic for
+  // `to` values that do not provide a pathname. `to` can simply be a search or
+  // hash string, in which case we should assume that the navigation is relative
+  // to the current location's pathname and *not* the route pathname.
+
+  let from;
+
+  if (toPathname == null) {
+    from = locationPathname;
+  } else {
+    let routePathnameIndex = routePathnames.length - 1;
+
+    if (toPathname.startsWith("..")) {
+      let toSegments = toPathname.split("/"); // Each leading .. segment means "go up one route" instead of "go up one
+      // URL segment".  This is a key difference from how <a href> works and a
+      // major reason we call this a "to" value instead of a "href".
+
+      while (toSegments[0] === "..") {
+        toSegments.shift();
+        routePathnameIndex -= 1;
+      }
+
+      to.pathname = toSegments.join("/");
+    } // If there are more ".." segments than parent routes, resolve relative to
+    // the root / URL.
+
+
+    from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : "/";
+  }
+
+  let path = resolvePath(to, from); // Ensure the pathname has a trailing slash if the original to value had one.
+
+  if (toPathname && toPathname !== "/" && toPathname.endsWith("/") && !path.pathname.endsWith("/")) {
+    path.pathname += "/";
+  }
+
+  return path;
+}
+
+function getToPathname(to) {
+  // Empty strings should be treated the same as / paths
+  return to === "" || to.pathname === "" ? "/" : typeof to === "string" ? (0, _history.parsePath)(to).pathname : to.pathname;
+}
+
+function stripBasename(pathname, basename) {
+  if (basename === "/") return pathname;
+
+  if (!pathname.toLowerCase().startsWith(basename.toLowerCase())) {
+    return null;
+  }
+
+  let nextChar = pathname.charAt(basename.length);
+
+  if (nextChar && nextChar !== "/") {
+    // pathname does not start with basename/
+    return null;
+  }
+
+  return pathname.slice(basename.length) || "/";
+}
+
+const joinPaths = paths => paths.join("/").replace(/\/\/+/g, "/");
+
+const normalizePathname = pathname => pathname.replace(/\/+$/, "").replace(/^\/*/, "/");
+
+const normalizeSearch = search => !search || search === "?" ? "" : search.startsWith("?") ? search : "?" + search;
+
+const normalizeHash = hash => !hash || hash === "#" ? "" : hash.startsWith("#") ? hash : "#" + hash;
+/**
+ * Returns the full href for the given "to" value. This is useful for building
+ * custom links that are also accessible and preserve right-click behavior.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#usehref
+ */
+
+
+function useHref(to) {
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of the
+  // router loaded. We can help them understand how to avoid that.
+  "useHref() may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  let {
+    basename,
+    navigator
+  } = (0, _react.useContext)(NavigationContext);
+  let {
+    hash,
+    pathname,
+    search
+  } = useResolvedPath(to);
+  let joinedPathname = pathname;
+
+  if (basename !== "/") {
+    let toPathname = getToPathname(to);
+    let endsWithSlash = toPathname != null && toPathname.endsWith("/");
+    joinedPathname = pathname === "/" ? basename + (endsWithSlash ? "/" : "") : joinPaths([basename, pathname]);
+  }
+
+  return navigator.createHref({
+    pathname: joinedPathname,
+    search,
+    hash
+  });
+}
+/**
+ * Returns true if this component is a descendant of a <Router>.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#useinroutercontext
+ */
+
+
+function useInRouterContext() {
+  return (0, _react.useContext)(LocationContext) != null;
+}
+/**
+ * Returns the current location object, which represents the current URL in web
+ * browsers.
+ *
+ * Note: If you're using this it may mean you're doing some of your own
+ * "routing" in your app, and we'd like to know what your use case is. We may
+ * be able to provide something higher-level to better suit your needs.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#uselocation
+ */
+
+
+function useLocation() {
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of the
+  // router loaded. We can help them understand how to avoid that.
+  "useLocation() may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  return (0, _react.useContext)(LocationContext).location;
+}
+/**
+ * Returns the current navigation action which describes how the router came to
+ * the current location, either by a pop, push, or replace on the history stack.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#usenavigationtype
+ */
+
+
+function useNavigationType() {
+  return (0, _react.useContext)(LocationContext).navigationType;
+}
+/**
+ * Returns true if the URL for the given "to" value matches the current URL.
+ * This is useful for components that need to know "active" state, e.g.
+ * <NavLink>.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#usematch
+ */
+
+
+function useMatch(pattern) {
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of the
+  // router loaded. We can help them understand how to avoid that.
+  "useMatch() may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  let {
+    pathname
+  } = useLocation();
+  return (0, _react.useMemo)(() => matchPath(pattern, pathname), [pathname, pattern]);
+}
+/**
+ * The interface for the navigate() function returned from useNavigate().
+ */
+
+/**
+ * Returns an imperative method for changing the location. Used by <Link>s, but
+ * may also be used by other elements to change the location.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#usenavigate
+ */
+
+
+function useNavigate() {
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of the
+  // router loaded. We can help them understand how to avoid that.
+  "useNavigate() may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  let {
+    basename,
+    navigator
+  } = (0, _react.useContext)(NavigationContext);
+  let {
+    matches
+  } = (0, _react.useContext)(RouteContext);
+  let {
+    pathname: locationPathname
+  } = useLocation();
+  let routePathnamesJson = JSON.stringify(matches.map(match => match.pathnameBase));
+  let activeRef = (0, _react.useRef)(false);
+  (0, _react.useEffect)(() => {
+    activeRef.current = true;
+  });
+  let navigate = (0, _react.useCallback)(function (to, options) {
+    if (options === void 0) {
+      options = {};
+    }
+
+    "development" !== "production" ? warning(activeRef.current, "You should call navigate() in a React.useEffect(), not when " + "your component is first rendered.") : void 0;
+    if (!activeRef.current) return;
+
+    if (typeof to === "number") {
+      navigator.go(to);
+      return;
+    }
+
+    let path = resolveTo(to, JSON.parse(routePathnamesJson), locationPathname);
+
+    if (basename !== "/") {
+      path.pathname = joinPaths([basename, path.pathname]);
+    }
+
+    (!!options.replace ? navigator.replace : navigator.push)(path, options.state);
+  }, [basename, navigator, routePathnamesJson, locationPathname]);
+  return navigate;
+}
+
+const OutletContext = /*#__PURE__*/(0, _react.createContext)(null);
+/**
+ * Returns the context (if provided) for the child route at this level of the route
+ * hierarchy.
+ * @see https://reactrouter.com/docs/en/v6/api#useoutletcontext
+ */
+
+function useOutletContext() {
+  return (0, _react.useContext)(OutletContext);
+}
+/**
+ * Returns the element for the child route at this level of the route
+ * hierarchy. Used internally by <Outlet> to render child routes.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#useoutlet
+ */
+
+
+function useOutlet(context) {
+  let outlet = (0, _react.useContext)(RouteContext).outlet;
+
+  if (outlet) {
+    return /*#__PURE__*/(0, _react.createElement)(OutletContext.Provider, {
+      value: context
+    }, outlet);
+  }
+
+  return outlet;
+}
+/**
+ * Returns an object of key/value pairs of the dynamic params from the current
+ * URL that were matched by the route path.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#useparams
+ */
+
+
+function useParams() {
+  let {
+    matches
+  } = (0, _react.useContext)(RouteContext);
+  let routeMatch = matches[matches.length - 1];
+  return routeMatch ? routeMatch.params : {};
+}
+/**
+ * Resolves the pathname of the given `to` value against the current location.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#useresolvedpath
+ */
+
+
+function useResolvedPath(to) {
+  let {
+    matches
+  } = (0, _react.useContext)(RouteContext);
+  let {
+    pathname: locationPathname
+  } = useLocation();
+  let routePathnamesJson = JSON.stringify(matches.map(match => match.pathnameBase));
+  return (0, _react.useMemo)(() => resolveTo(to, JSON.parse(routePathnamesJson), locationPathname), [to, routePathnamesJson, locationPathname]);
+}
+/**
+ * Returns the element of the route that matched the current location, prepared
+ * with the correct context to render the remainder of the route tree. Route
+ * elements in the tree must render an <Outlet> to render their child route's
+ * element.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#useroutes
+ */
+
+
+function useRoutes(routes, locationArg) {
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of the
+  // router loaded. We can help them understand how to avoid that.
+  "useRoutes() may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  let {
+    matches: parentMatches
+  } = (0, _react.useContext)(RouteContext);
+  let routeMatch = parentMatches[parentMatches.length - 1];
+  let parentParams = routeMatch ? routeMatch.params : {};
+  let parentPathname = routeMatch ? routeMatch.pathname : "/";
+  let parentPathnameBase = routeMatch ? routeMatch.pathnameBase : "/";
+  let parentRoute = routeMatch && routeMatch.route;
+
+  if ("development" !== "production") {
+    // You won't get a warning about 2 different <Routes> under a <Route>
+    // without a trailing *, but this is a best-effort warning anyway since we
+    // cannot even give the warning unless they land at the parent route.
+    //
+    // Example:
+    //
+    // <Routes>
+    //   {/* This route path MUST end with /* because otherwise
+    //       it will never match /blog/post/123 */}
+    //   <Route path="blog" element={<Blog />} />
+    //   <Route path="blog/feed" element={<BlogFeed />} />
+    // </Routes>
+    //
+    // function Blog() {
+    //   return (
+    //     <Routes>
+    //       <Route path="post/:id" element={<Post />} />
+    //     </Routes>
+    //   );
+    // }
+    let parentPath = parentRoute && parentRoute.path || "";
+    warningOnce(parentPathname, !parentRoute || parentPath.endsWith("*"), "You rendered descendant <Routes> (or called `useRoutes()`) at " + ("\"" + parentPathname + "\" (under <Route path=\"" + parentPath + "\">) but the ") + "parent route path has no trailing \"*\". This means if you navigate " + "deeper, the parent won't match anymore and therefore the child " + "routes will never render.\n\n" + ("Please change the parent <Route path=\"" + parentPath + "\"> to <Route ") + ("path=\"" + (parentPath === "/" ? "*" : parentPath + "/*") + "\">."));
+  }
+
+  let locationFromContext = useLocation();
+  let location;
+
+  if (locationArg) {
+    var _parsedLocationArg$pa;
+
+    let parsedLocationArg = typeof locationArg === "string" ? (0, _history.parsePath)(locationArg) : locationArg;
+    !(parentPathnameBase === "/" || ((_parsedLocationArg$pa = parsedLocationArg.pathname) == null ? void 0 : _parsedLocationArg$pa.startsWith(parentPathnameBase))) ? "development" !== "production" ? invariant(false, "When overriding the location using `<Routes location>` or `useRoutes(routes, location)`, " + "the location pathname must begin with the portion of the URL pathname that was " + ("matched by all parent routes. The current pathname base is \"" + parentPathnameBase + "\" ") + ("but pathname \"" + parsedLocationArg.pathname + "\" was given in the `location` prop.")) : invariant(false) : void 0;
+    location = parsedLocationArg;
+  } else {
+    location = locationFromContext;
+  }
+
+  let pathname = location.pathname || "/";
+  let remainingPathname = parentPathnameBase === "/" ? pathname : pathname.slice(parentPathnameBase.length) || "/";
+  let matches = matchRoutes(routes, {
+    pathname: remainingPathname
+  });
+
+  if ("development" !== "production") {
+    "development" !== "production" ? warning(parentRoute || matches != null, "No routes matched location \"" + location.pathname + location.search + location.hash + "\" ") : void 0;
+    "development" !== "production" ? warning(matches == null || matches[matches.length - 1].route.element !== undefined, "Matched leaf route at location \"" + location.pathname + location.search + location.hash + "\" does not have an element. " + "This means it will render an <Outlet /> with a null value by default resulting in an \"empty\" page.") : void 0;
+  }
+
+  return _renderMatches(matches && matches.map(match => Object.assign({}, match, {
+    params: Object.assign({}, parentParams, match.params),
+    pathname: joinPaths([parentPathnameBase, match.pathname]),
+    pathnameBase: match.pathnameBase === "/" ? parentPathnameBase : joinPaths([parentPathnameBase, match.pathnameBase])
+  })), parentMatches);
+}
+
+function _renderMatches(matches, parentMatches) {
+  if (parentMatches === void 0) {
+    parentMatches = [];
+  }
+
+  if (matches == null) return null;
+  return matches.reduceRight((outlet, match, index) => {
+    return /*#__PURE__*/(0, _react.createElement)(RouteContext.Provider, {
+      children: match.route.element !== undefined ? match.route.element : outlet,
+      value: {
+        outlet,
+        matches: parentMatches.concat(matches.slice(0, index + 1))
+      }
+    });
+  }, null);
+}
+/**
+ * A <Router> that stores all entries in memory.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#memoryrouter
+ */
+
+
+function MemoryRouter(_ref) {
+  let {
+    basename,
+    children,
+    initialEntries,
+    initialIndex
+  } = _ref;
+  let historyRef = (0, _react.useRef)();
+
+  if (historyRef.current == null) {
+    historyRef.current = (0, _history.createMemoryHistory)({
+      initialEntries,
+      initialIndex
+    });
+  }
+
+  let history = historyRef.current;
+  let [state, setState] = (0, _react.useState)({
+    action: history.action,
+    location: history.location
+  });
+  (0, _react.useLayoutEffect)(() => history.listen(setState), [history]);
+  return /*#__PURE__*/(0, _react.createElement)(Router, {
+    basename: basename,
+    children: children,
+    location: state.location,
+    navigationType: state.action,
+    navigator: history
+  });
+}
+/**
+ * Changes the current location.
+ *
+ * Note: This API is mostly useful in React.Component subclasses that are not
+ * able to use hooks. In functional components, we recommend you use the
+ * `useNavigate` hook instead.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#navigate
+ */
+
+
+function Navigate(_ref2) {
+  let {
+    to,
+    replace,
+    state
+  } = _ref2;
+  !useInRouterContext() ? "development" !== "production" ? invariant(false, // TODO: This error is probably because they somehow have 2 versions of
+  // the router loaded. We can help them understand how to avoid that.
+  "<Navigate> may be used only in the context of a <Router> component.") : invariant(false) : void 0;
+  "development" !== "production" ? warning(!(0, _react.useContext)(NavigationContext).static, "<Navigate> must not be used on the initial render in a <StaticRouter>. " + "This is a no-op, but you should modify your code so the <Navigate> is " + "only ever rendered in response to some user interaction or state change.") : void 0;
+  let navigate = useNavigate();
+  (0, _react.useEffect)(() => {
+    navigate(to, {
+      replace,
+      state
+    });
+  });
+  return null;
+}
+/**
+ * Renders the child route's element, if there is one.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#outlet
+ */
+
+
+function Outlet(props) {
+  return useOutlet(props.context);
+}
+/**
+ * Declares an element that should be rendered at a certain URL path.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#route
+ */
+
+
+function Route(_props) {
+  "development" !== "production" ? invariant(false, "A <Route> is only ever to be used as the child of <Routes> element, " + "never rendered directly. Please wrap your <Route> in a <Routes>.") : invariant(false);
+}
+/**
+ * Provides location context for the rest of the app.
+ *
+ * Note: You usually won't render a <Router> directly. Instead, you'll render a
+ * router that is more specific to your environment such as a <BrowserRouter>
+ * in web browsers or a <StaticRouter> for server rendering.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#router
+ */
+
+
+function Router(_ref3) {
+  let {
+    basename: basenameProp = "/",
+    children = null,
+    location: locationProp,
+    navigationType = _history.Action.Pop,
+    navigator,
+    static: staticProp = false
+  } = _ref3;
+  !!useInRouterContext() ? "development" !== "production" ? invariant(false, "You cannot render a <Router> inside another <Router>." + " You should never have more than one in your app.") : invariant(false) : void 0;
+  let basename = normalizePathname(basenameProp);
+  let navigationContext = (0, _react.useMemo)(() => ({
+    basename,
+    navigator,
+    static: staticProp
+  }), [basename, navigator, staticProp]);
+
+  if (typeof locationProp === "string") {
+    locationProp = (0, _history.parsePath)(locationProp);
+  }
+
+  let {
+    pathname = "/",
+    search = "",
+    hash = "",
+    state = null,
+    key = "default"
+  } = locationProp;
+  let location = (0, _react.useMemo)(() => {
+    let trailingPathname = stripBasename(pathname, basename);
+
+    if (trailingPathname == null) {
+      return null;
+    }
+
+    return {
+      pathname: trailingPathname,
+      search,
+      hash,
+      state,
+      key
+    };
+  }, [basename, pathname, search, hash, state, key]);
+  "development" !== "production" ? warning(location != null, "<Router basename=\"" + basename + "\"> is not able to match the URL " + ("\"" + pathname + search + hash + "\" because it does not start with the ") + "basename, so the <Router> won't render anything.") : void 0;
+
+  if (location == null) {
+    return null;
+  }
+
+  return /*#__PURE__*/(0, _react.createElement)(NavigationContext.Provider, {
+    value: navigationContext
+  }, /*#__PURE__*/(0, _react.createElement)(LocationContext.Provider, {
+    children: children,
+    value: {
+      location,
+      navigationType
+    }
+  }));
+}
+/**
+ * A container for a nested tree of <Route> elements that renders the branch
+ * that best matches the current location.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#routes
+ */
+
+
+function Routes(_ref4) {
+  let {
+    children,
+    location
+  } = _ref4;
+  return useRoutes(createRoutesFromChildren(children), location);
+} ///////////////////////////////////////////////////////////////////////////////
+// UTILS
+///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Creates a route config from a React "children" object, which is usually
+ * either a `<Route>` element or an array of them. Used internally by
+ * `<Routes>` to create a route config from its children.
+ *
+ * @see https://reactrouter.com/docs/en/v6/api#createroutesfromchildren
+ */
+
+
+function createRoutesFromChildren(children) {
+  let routes = [];
+
+  _react.Children.forEach(children, element => {
+    if (! /*#__PURE__*/(0, _react.isValidElement)(element)) {
+      // Ignore non-elements. This allows people to more easily inline
+      // conditionals in their route config.
+      return;
+    }
+
+    if (element.type === _react.Fragment) {
+      // Transparently support React.Fragment and its children.
+      routes.push.apply(routes, createRoutesFromChildren(element.props.children));
+      return;
+    }
+
+    !(element.type === Route) ? "development" !== "production" ? invariant(false, "[" + (typeof element.type === "string" ? element.type : element.type.name) + "] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>") : invariant(false) : void 0;
+    let route = {
+      caseSensitive: element.props.caseSensitive,
+      element: element.props.element,
+      index: element.props.index,
+      path: element.props.path
+    };
+
+    if (element.props.children) {
+      route.children = createRoutesFromChildren(element.props.children);
+    }
+
+    routes.push(route);
+  });
+
+  return routes;
+}
+/**
+ * Renders the result of `matchRoutes()` into a React element.
+ */
+
+
+function renderMatches(matches) {
+  return _renderMatches(matches);
+}
+},{"history":"../../node_modules/history/index.js","react":"../../node_modules/react/index.js"}],"../../node_modules/react-router-dom/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.BrowserRouter = BrowserRouter;
+exports.HashRouter = HashRouter;
+exports.Link = void 0;
+Object.defineProperty(exports, "MemoryRouter", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.MemoryRouter;
+  }
+});
+exports.NavLink = void 0;
+Object.defineProperty(exports, "Navigate", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.Navigate;
+  }
+});
+Object.defineProperty(exports, "NavigationType", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.NavigationType;
+  }
+});
+Object.defineProperty(exports, "Outlet", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.Outlet;
+  }
+});
+Object.defineProperty(exports, "Route", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.Route;
+  }
+});
+Object.defineProperty(exports, "Router", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.Router;
+  }
+});
+Object.defineProperty(exports, "Routes", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.Routes;
+  }
+});
+Object.defineProperty(exports, "UNSAFE_LocationContext", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.UNSAFE_LocationContext;
+  }
+});
+Object.defineProperty(exports, "UNSAFE_NavigationContext", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.UNSAFE_NavigationContext;
+  }
+});
+Object.defineProperty(exports, "UNSAFE_RouteContext", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.UNSAFE_RouteContext;
+  }
+});
+Object.defineProperty(exports, "createPath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.createPath;
+  }
+});
+Object.defineProperty(exports, "createRoutesFromChildren", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.createRoutesFromChildren;
+  }
+});
+exports.createSearchParams = createSearchParams;
+Object.defineProperty(exports, "generatePath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.generatePath;
+  }
+});
+Object.defineProperty(exports, "matchPath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.matchPath;
+  }
+});
+Object.defineProperty(exports, "matchRoutes", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.matchRoutes;
+  }
+});
+Object.defineProperty(exports, "parsePath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.parsePath;
+  }
+});
+Object.defineProperty(exports, "renderMatches", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.renderMatches;
+  }
+});
+Object.defineProperty(exports, "resolvePath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.resolvePath;
+  }
+});
+exports.unstable_HistoryRouter = HistoryRouter;
+Object.defineProperty(exports, "useHref", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useHref;
+  }
+});
+Object.defineProperty(exports, "useInRouterContext", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useInRouterContext;
+  }
+});
+exports.useLinkClickHandler = useLinkClickHandler;
+Object.defineProperty(exports, "useLocation", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useLocation;
+  }
+});
+Object.defineProperty(exports, "useMatch", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useMatch;
+  }
+});
+Object.defineProperty(exports, "useNavigate", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useNavigate;
+  }
+});
+Object.defineProperty(exports, "useNavigationType", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useNavigationType;
+  }
+});
+Object.defineProperty(exports, "useOutlet", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useOutlet;
+  }
+});
+Object.defineProperty(exports, "useOutletContext", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useOutletContext;
+  }
+});
+Object.defineProperty(exports, "useParams", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useParams;
+  }
+});
+Object.defineProperty(exports, "useResolvedPath", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useResolvedPath;
+  }
+});
+Object.defineProperty(exports, "useRoutes", {
+  enumerable: true,
+  get: function () {
+    return _reactRouter.useRoutes;
+  }
+});
+exports.useSearchParams = useSearchParams;
+
+var _react = require("react");
+
+var _history = require("history");
+
+var _reactRouter = require("react-router");
+
+/**
+ * React Router DOM v6.3.0
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+const _excluded = ["onClick", "reloadDocument", "replace", "state", "target", "to"],
+      _excluded2 = ["aria-current", "caseSensitive", "className", "end", "style", "to", "children"];
+
+function warning(cond, message) {
+  if (!cond) {
+    // eslint-disable-next-line no-console
+    if (typeof console !== "undefined") console.warn(message);
+
+    try {
+      // Welcome to debugging React Router!
+      //
+      // This error is thrown as a convenience so you can more easily
+      // find the source for a warning that appears in the console by
+      // enabling "pause on exceptions" in your JavaScript debugger.
+      throw new Error(message); // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+} ////////////////////////////////////////////////////////////////////////////////
+// COMPONENTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * A `<Router>` for use in web browsers. Provides the cleanest URLs.
+ */
+
+
+function BrowserRouter(_ref) {
+  let {
+    basename,
+    children,
+    window
+  } = _ref;
+  let historyRef = (0, _react.useRef)();
+
+  if (historyRef.current == null) {
+    historyRef.current = (0, _history.createBrowserHistory)({
+      window
+    });
+  }
+
+  let history = historyRef.current;
+  let [state, setState] = (0, _react.useState)({
+    action: history.action,
+    location: history.location
+  });
+  (0, _react.useLayoutEffect)(() => history.listen(setState), [history]);
+  return /*#__PURE__*/(0, _react.createElement)(_reactRouter.Router, {
+    basename: basename,
+    children: children,
+    location: state.location,
+    navigationType: state.action,
+    navigator: history
+  });
+}
+/**
+ * A `<Router>` for use in web browsers. Stores the location in the hash
+ * portion of the URL so it is not sent to the server.
+ */
+
+
+function HashRouter(_ref2) {
+  let {
+    basename,
+    children,
+    window
+  } = _ref2;
+  let historyRef = (0, _react.useRef)();
+
+  if (historyRef.current == null) {
+    historyRef.current = (0, _history.createHashHistory)({
+      window
+    });
+  }
+
+  let history = historyRef.current;
+  let [state, setState] = (0, _react.useState)({
+    action: history.action,
+    location: history.location
+  });
+  (0, _react.useLayoutEffect)(() => history.listen(setState), [history]);
+  return /*#__PURE__*/(0, _react.createElement)(_reactRouter.Router, {
+    basename: basename,
+    children: children,
+    location: state.location,
+    navigationType: state.action,
+    navigator: history
+  });
+}
+/**
+ * A `<Router>` that accepts a pre-instantiated history object. It's important
+ * to note that using your own history object is highly discouraged and may add
+ * two versions of the history library to your bundles unless you use the same
+ * version of the history library that React Router uses internally.
+ */
+
+
+function HistoryRouter(_ref3) {
+  let {
+    basename,
+    children,
+    history
+  } = _ref3;
+  const [state, setState] = (0, _react.useState)({
+    action: history.action,
+    location: history.location
+  });
+  (0, _react.useLayoutEffect)(() => history.listen(setState), [history]);
+  return /*#__PURE__*/(0, _react.createElement)(_reactRouter.Router, {
+    basename: basename,
+    children: children,
+    location: state.location,
+    navigationType: state.action,
+    navigator: history
+  });
+}
+
+if ("development" !== "production") {
+  HistoryRouter.displayName = "unstable_HistoryRouter";
+}
+
+function isModifiedEvent(event) {
+  return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+}
+/**
+ * The public API for rendering a history-aware <a>.
+ */
+
+
+const Link = /*#__PURE__*/(0, _react.forwardRef)(function LinkWithRef(_ref4, ref) {
+  let {
+    onClick,
+    reloadDocument,
+    replace = false,
+    state,
+    target,
+    to
+  } = _ref4,
+      rest = _objectWithoutPropertiesLoose(_ref4, _excluded);
+
+  let href = (0, _reactRouter.useHref)(to);
+  let internalOnClick = useLinkClickHandler(to, {
+    replace,
+    state,
+    target
+  });
+
+  function handleClick(event) {
+    if (onClick) onClick(event);
+
+    if (!event.defaultPrevented && !reloadDocument) {
+      internalOnClick(event);
+    }
+  }
+
+  return (
+    /*#__PURE__*/
+    // eslint-disable-next-line jsx-a11y/anchor-has-content
+    (0, _react.createElement)("a", _extends({}, rest, {
+      href: href,
+      onClick: handleClick,
+      ref: ref,
+      target: target
+    }))
+  );
+});
+exports.Link = Link;
+
+if ("development" !== "production") {
+  Link.displayName = "Link";
+}
+/**
+ * A <Link> wrapper that knows if it's "active" or not.
+ */
+
+
+const NavLink = /*#__PURE__*/(0, _react.forwardRef)(function NavLinkWithRef(_ref5, ref) {
+  let {
+    "aria-current": ariaCurrentProp = "page",
+    caseSensitive = false,
+    className: classNameProp = "",
+    end = false,
+    style: styleProp,
+    to,
+    children
+  } = _ref5,
+      rest = _objectWithoutPropertiesLoose(_ref5, _excluded2);
+
+  let location = (0, _reactRouter.useLocation)();
+  let path = (0, _reactRouter.useResolvedPath)(to);
+  let locationPathname = location.pathname;
+  let toPathname = path.pathname;
+
+  if (!caseSensitive) {
+    locationPathname = locationPathname.toLowerCase();
+    toPathname = toPathname.toLowerCase();
+  }
+
+  let isActive = locationPathname === toPathname || !end && locationPathname.startsWith(toPathname) && locationPathname.charAt(toPathname.length) === "/";
+  let ariaCurrent = isActive ? ariaCurrentProp : undefined;
+  let className;
+
+  if (typeof classNameProp === "function") {
+    className = classNameProp({
+      isActive
+    });
+  } else {
+    // If the className prop is not a function, we use a default `active`
+    // class for <NavLink />s that are active. In v5 `active` was the default
+    // value for `activeClassName`, but we are removing that API and can still
+    // use the old default behavior for a cleaner upgrade path and keep the
+    // simple styling rules working as they currently do.
+    className = [classNameProp, isActive ? "active" : null].filter(Boolean).join(" ");
+  }
+
+  let style = typeof styleProp === "function" ? styleProp({
+    isActive
+  }) : styleProp;
+  return /*#__PURE__*/(0, _react.createElement)(Link, _extends({}, rest, {
+    "aria-current": ariaCurrent,
+    className: className,
+    ref: ref,
+    style: style,
+    to: to
+  }), typeof children === "function" ? children({
+    isActive
+  }) : children);
+});
+exports.NavLink = NavLink;
+
+if ("development" !== "production") {
+  NavLink.displayName = "NavLink";
+} ////////////////////////////////////////////////////////////////////////////////
+// HOOKS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Handles the click behavior for router `<Link>` components. This is useful if
+ * you need to create custom `<Link>` components with the same click behavior we
+ * use in our exported `<Link>`.
+ */
+
+
+function useLinkClickHandler(to, _temp) {
+  let {
+    target,
+    replace: replaceProp,
+    state
+  } = _temp === void 0 ? {} : _temp;
+  let navigate = (0, _reactRouter.useNavigate)();
+  let location = (0, _reactRouter.useLocation)();
+  let path = (0, _reactRouter.useResolvedPath)(to);
+  return (0, _react.useCallback)(event => {
+    if (event.button === 0 && ( // Ignore everything but left clicks
+    !target || target === "_self") && // Let browser handle "target=_blank" etc.
+    !isModifiedEvent(event) // Ignore clicks with modifier keys
+    ) {
+      event.preventDefault(); // If the URL hasn't changed, a regular <a> will do a replace instead of
+      // a push, so do the same here.
+
+      let replace = !!replaceProp || (0, _reactRouter.createPath)(location) === (0, _reactRouter.createPath)(path);
+      navigate(to, {
+        replace,
+        state
+      });
+    }
+  }, [location, navigate, path, replaceProp, state, target, to]);
+}
+/**
+ * A convenient wrapper for reading and writing search parameters via the
+ * URLSearchParams interface.
+ */
+
+
+function useSearchParams(defaultInit) {
+  "development" !== "production" ? warning(typeof URLSearchParams !== "undefined", "You cannot use the `useSearchParams` hook in a browser that does not " + "support the URLSearchParams API. If you need to support Internet " + "Explorer 11, we recommend you load a polyfill such as " + "https://github.com/ungap/url-search-params\n\n" + "If you're unsure how to load polyfills, we recommend you check out " + "https://polyfill.io/v3/ which provides some recommendations about how " + "to load polyfills only for users that need them, instead of for every " + "user.") : void 0;
+  let defaultSearchParamsRef = (0, _react.useRef)(createSearchParams(defaultInit));
+  let location = (0, _reactRouter.useLocation)();
+  let searchParams = (0, _react.useMemo)(() => {
+    let searchParams = createSearchParams(location.search);
+
+    for (let key of defaultSearchParamsRef.current.keys()) {
+      if (!searchParams.has(key)) {
+        defaultSearchParamsRef.current.getAll(key).forEach(value => {
+          searchParams.append(key, value);
+        });
+      }
+    }
+
+    return searchParams;
+  }, [location.search]);
+  let navigate = (0, _reactRouter.useNavigate)();
+  let setSearchParams = (0, _react.useCallback)((nextInit, navigateOptions) => {
+    navigate("?" + createSearchParams(nextInit), navigateOptions);
+  }, [navigate]);
+  return [searchParams, setSearchParams];
+}
+/**
+ * Creates a URLSearchParams object using the given initializer.
+ *
+ * This is identical to `new URLSearchParams(init)` except it also
+ * supports arrays as values in the object form of the initializer
+ * instead of just strings. This is convenient when you need multiple
+ * values for a given key, but don't want to use an array initializer.
+ *
+ * For example, instead of:
+ *
+ *   let searchParams = new URLSearchParams([
+ *     ['sort', 'name'],
+ *     ['sort', 'price']
+ *   ]);
+ *
+ * you can do:
+ *
+ *   let searchParams = createSearchParams({
+ *     sort: ['name', 'price']
+ *   });
+ */
+
+
+function createSearchParams(init) {
+  if (init === void 0) {
+    init = "";
+  }
+
+  return new URLSearchParams(typeof init === "string" || Array.isArray(init) || init instanceof URLSearchParams ? init : Object.keys(init).reduce((memo, key) => {
+    let value = init[key];
+    return memo.concat(Array.isArray(value) ? value.map(v => [key, v]) : [[key, value]]);
+  }, []));
+}
+},{"react":"../../node_modules/react/index.js","history":"../../node_modules/history/index.js","react-router":"../../node_modules/react-router/index.js"}],"../Pages/LoadingPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function LoadingPage() {
+  return _react.default.createElement("div", null, _react.default.createElement("svg", {
+    width: "375px",
+    height: "667px",
+    viewBox: "0 0 375 667",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg"
+  }, _react.default.createElement("rect", {
+    width: "375",
+    height: "667",
+    fill: "black"
+  }), _react.default.createElement("rect", {
+    x: "204.5",
+    y: "324",
+    width: "12",
+    height: "35",
+    transform: "rotate(-180 204.5 324)",
+    fill: "white"
+  }), _react.default.createElement("rect", {
+    x: "189.5",
+    y: "324",
+    width: "8",
+    height: "35",
+    transform: "rotate(-180 189.5 324)",
+    fill: "white"
+  }), _react.default.createElement("rect", {
+    x: "178.5",
+    y: "324",
+    width: "4",
+    height: "35",
+    transform: "rotate(-180 178.5 324)",
+    fill: "white"
+  }), _react.default.createElement("rect", {
+    x: "171.5",
+    y: "324",
+    width: "2",
+    height: "35",
+    transform: "rotate(-180 171.5 324)",
+    fill: "white"
+  }), _react.default.createElement("path", {
+    d: "M135.602 350H132.799V335.996H135.602V350ZM151.41 350H148.412L143.012 340.781V350H140.209V335.996H143.207L148.607 345.225V335.996H151.41V350ZM161.896 350H159.104V338.799H154.895V335.996H166.096V338.799H161.896V350ZM179.18 350H169.58V335.996H179.18V338.799H172.383V341.602H176.982V344.404H172.383V347.197H179.18V350ZM185.945 338.799V344.404H188.748C189.132 344.404 189.493 344.333 189.832 344.189C190.171 344.04 190.467 343.838 190.721 343.584C190.975 343.33 191.173 343.034 191.316 342.695C191.466 342.35 191.541 341.986 191.541 341.602C191.541 341.217 191.466 340.856 191.316 340.518C191.173 340.173 190.975 339.873 190.721 339.619C190.467 339.365 190.171 339.167 189.832 339.023C189.493 338.874 189.132 338.799 188.748 338.799H185.945ZM185.945 350H183.143V335.996H188.748C189.262 335.996 189.757 336.064 190.232 336.201C190.708 336.331 191.15 336.52 191.561 336.768C191.977 337.008 192.355 337.301 192.693 337.646C193.038 337.985 193.331 338.363 193.572 338.779C193.82 339.196 194.008 339.642 194.139 340.117C194.275 340.592 194.344 341.087 194.344 341.602C194.344 342.083 194.282 342.552 194.158 343.008C194.041 343.464 193.868 343.896 193.641 344.307C193.419 344.717 193.146 345.094 192.82 345.439C192.495 345.785 192.13 346.084 191.727 346.338L193.279 350H190.301L189.08 347.178L185.945 347.197V350ZM208.756 335.996L204.156 350H201.354L196.773 335.996H199.957L202.75 345.342L205.553 335.996H208.756ZM220.033 344.404V341.602C220.033 341.217 219.958 340.856 219.809 340.518C219.665 340.173 219.467 339.873 219.213 339.619C218.959 339.365 218.66 339.167 218.314 339.023C217.976 338.874 217.615 338.799 217.23 338.799C216.846 338.799 216.482 338.874 216.137 339.023C215.798 339.167 215.502 339.365 215.248 339.619C214.994 339.873 214.792 340.173 214.643 340.518C214.499 340.856 214.428 341.217 214.428 341.602V344.404H220.033ZM222.836 350H220.033V347.197H214.428V350H211.635V341.602C211.635 340.827 211.781 340.101 212.074 339.424C212.367 338.74 212.764 338.145 213.266 337.637C213.773 337.129 214.366 336.729 215.043 336.436C215.727 336.143 216.456 335.996 217.23 335.996C218.005 335.996 218.731 336.143 219.408 336.436C220.092 336.729 220.688 337.129 221.195 337.637C221.703 338.145 222.104 338.74 222.396 339.424C222.689 340.101 222.836 340.827 222.836 341.602V350ZM237.072 350H227.268V335.996H230.07V347.197H237.072V350Z",
+    fill: "white"
+  }), _react.default.createElement("path", {
+    d: "M96.6595 365.2H101.994V366.236H97.8215V369.582H101.714V370.618H97.8215V375H96.6595V365.2ZM104.788 371.5C104.788 370.315 105.049 369.409 105.572 368.784C106.104 368.149 106.865 367.832 107.854 367.832C108.377 367.832 108.829 367.921 109.212 368.098C109.604 368.266 109.926 368.513 110.178 368.84C110.43 369.157 110.617 369.545 110.738 370.002C110.859 370.45 110.92 370.949 110.92 371.5C110.92 372.685 110.654 373.595 110.122 374.23C109.599 374.855 108.843 375.168 107.854 375.168C107.331 375.168 106.874 375.084 106.482 374.916C106.099 374.739 105.782 374.491 105.53 374.174C105.278 373.847 105.091 373.46 104.97 373.012C104.849 372.555 104.788 372.051 104.788 371.5ZM105.95 371.5C105.95 371.855 105.983 372.195 106.048 372.522C106.123 372.849 106.235 373.133 106.384 373.376C106.533 373.619 106.729 373.815 106.972 373.964C107.215 374.113 107.509 374.188 107.854 374.188C109.123 374.197 109.758 373.301 109.758 371.5C109.758 371.136 109.721 370.791 109.646 370.464C109.581 370.137 109.473 369.853 109.324 369.61C109.175 369.367 108.979 369.176 108.736 369.036C108.493 368.887 108.199 368.812 107.854 368.812C106.585 368.803 105.95 369.699 105.95 371.5ZM117.39 369.078C117.11 368.985 116.844 368.938 116.592 368.938C116.19 368.938 115.873 369.05 115.64 369.274C115.406 369.489 115.262 369.764 115.206 370.1V375H114.086V368H114.87L115.08 368.854H115.136C115.313 368.537 115.523 368.294 115.766 368.126C116.018 367.949 116.335 367.86 116.718 367.86C116.988 367.86 117.292 367.907 117.628 368L117.39 369.078ZM125.264 368.518C125.619 368.303 126.029 368.145 126.496 368.042C126.972 367.939 127.467 367.888 127.98 367.888C128.465 367.888 128.853 367.953 129.142 368.084C129.441 368.215 129.665 368.387 129.814 368.602C129.973 368.807 130.075 369.036 130.122 369.288C130.178 369.54 130.206 369.792 130.206 370.044C130.206 370.604 130.192 371.15 130.164 371.682C130.136 372.214 130.122 372.718 130.122 373.194C130.122 373.539 130.136 373.866 130.164 374.174C130.192 374.482 130.243 374.767 130.318 375.028H129.492L129.198 374.048H129.128C129.044 374.179 128.937 374.309 128.806 374.44C128.685 374.561 128.535 374.673 128.358 374.776C128.181 374.869 127.975 374.949 127.742 375.014C127.509 375.079 127.243 375.112 126.944 375.112C126.645 375.112 126.365 375.065 126.104 374.972C125.852 374.879 125.633 374.748 125.446 374.58C125.259 374.403 125.11 374.193 124.998 373.95C124.895 373.707 124.844 373.432 124.844 373.124C124.844 372.713 124.928 372.373 125.096 372.102C125.264 371.822 125.497 371.603 125.796 371.444C126.104 371.276 126.468 371.159 126.888 371.094C127.317 371.019 127.789 370.982 128.302 370.982C128.433 370.982 128.559 370.982 128.68 370.982C128.811 370.982 128.941 370.991 129.072 371.01C129.1 370.73 129.114 370.478 129.114 370.254C129.114 369.741 129.011 369.381 128.806 369.176C128.601 368.971 128.227 368.868 127.686 368.868C127.527 368.868 127.355 368.882 127.168 368.91C126.991 368.929 126.804 368.961 126.608 369.008C126.421 369.045 126.239 369.097 126.062 369.162C125.894 369.218 125.745 369.283 125.614 369.358L125.264 368.518ZM127.252 374.132C127.513 374.132 127.747 374.099 127.952 374.034C128.157 373.959 128.335 373.871 128.484 373.768C128.633 373.656 128.755 373.535 128.848 373.404C128.951 373.273 129.025 373.147 129.072 373.026V371.864C128.941 371.855 128.806 371.85 128.666 371.85C128.535 371.841 128.405 371.836 128.274 371.836C127.985 371.836 127.7 371.855 127.42 371.892C127.149 371.92 126.907 371.981 126.692 372.074C126.487 372.158 126.319 372.279 126.188 372.438C126.067 372.587 126.006 372.779 126.006 373.012C126.006 373.339 126.123 373.609 126.356 373.824C126.589 374.029 126.888 374.132 127.252 374.132ZM134.967 373.278C134.967 373.605 135.023 373.838 135.135 373.978C135.247 374.118 135.406 374.188 135.611 374.188C135.733 374.188 135.863 374.179 136.003 374.16C136.143 374.141 136.302 374.099 136.479 374.034L136.605 374.916C136.456 374.991 136.246 375.051 135.975 375.098C135.714 375.145 135.485 375.168 135.289 375.168C134.869 375.168 134.524 375.051 134.253 374.818C133.983 374.575 133.847 374.169 133.847 373.6V365.2H134.967V373.278ZM140.455 373.278C140.455 373.605 140.511 373.838 140.623 373.978C140.735 374.118 140.894 374.188 141.099 374.188C141.221 374.188 141.351 374.179 141.491 374.16C141.631 374.141 141.79 374.099 141.967 374.034L142.093 374.916C141.944 374.991 141.734 375.051 141.463 375.098C141.202 375.145 140.973 375.168 140.777 375.168C140.357 375.168 140.012 375.051 139.741 374.818C139.471 374.575 139.335 374.169 139.335 373.6V365.2H140.455V373.278ZM151.696 372.536L152.088 373.88H152.158L152.466 372.522L153.824 368H154.958L152.886 374.286C152.727 374.743 152.569 375.187 152.41 375.616C152.261 376.045 152.093 376.428 151.906 376.764C151.719 377.1 151.509 377.366 151.276 377.562C151.043 377.767 150.772 377.87 150.464 377.87C150.128 377.87 149.853 377.823 149.638 377.73L149.834 376.764C149.955 376.811 150.072 376.834 150.184 376.834C150.445 376.834 150.697 376.694 150.94 376.414C151.183 376.143 151.383 375.672 151.542 375L148.728 368H150.016L151.696 372.536ZM157.017 371.5C157.017 370.315 157.279 369.409 157.801 368.784C158.333 368.149 159.094 367.832 160.083 367.832C160.606 367.832 161.059 367.921 161.441 368.098C161.833 368.266 162.155 368.513 162.407 368.84C162.659 369.157 162.846 369.545 162.967 370.002C163.089 370.45 163.149 370.949 163.149 371.5C163.149 372.685 162.883 373.595 162.351 374.23C161.829 374.855 161.073 375.168 160.083 375.168C159.561 375.168 159.103 375.084 158.711 374.916C158.329 374.739 158.011 374.491 157.759 374.174C157.507 373.847 157.321 373.46 157.199 373.012C157.078 372.555 157.017 372.051 157.017 371.5ZM158.179 371.5C158.179 371.855 158.212 372.195 158.277 372.522C158.352 372.849 158.464 373.133 158.613 373.376C158.763 373.619 158.959 373.815 159.201 373.964C159.444 374.113 159.738 374.188 160.083 374.188C161.353 374.197 161.987 373.301 161.987 371.5C161.987 371.136 161.95 370.791 161.875 370.464C161.81 370.137 161.703 369.853 161.553 369.61C161.404 369.367 161.208 369.176 160.965 369.036C160.723 368.887 160.429 368.812 160.083 368.812C158.814 368.803 158.179 369.699 158.179 371.5ZM167.323 368V371.99C167.323 372.354 167.342 372.676 167.379 372.956C167.426 373.227 167.5 373.455 167.603 373.642C167.706 373.819 167.846 373.955 168.023 374.048C168.2 374.141 168.424 374.188 168.695 374.188C168.947 374.188 169.171 374.151 169.367 374.076C169.563 373.992 169.736 373.88 169.885 373.74C170.044 373.6 170.179 373.441 170.291 373.264C170.412 373.077 170.51 372.881 170.585 372.676V368H171.705V373.012C171.705 373.348 171.714 373.698 171.733 374.062C171.761 374.417 171.803 374.729 171.859 375H171.089L170.809 373.894H170.739C170.524 374.258 170.235 374.561 169.871 374.804C169.507 375.047 169.045 375.168 168.485 375.168C168.112 375.168 167.78 375.121 167.491 375.028C167.211 374.944 166.973 374.79 166.777 374.566C166.59 374.342 166.446 374.043 166.343 373.67C166.25 373.287 166.203 372.807 166.203 372.228V368H167.323ZM178.566 369.078C178.286 368.985 178.02 368.938 177.768 368.938C177.367 368.938 177.049 369.05 176.816 369.274C176.583 369.489 176.438 369.764 176.382 370.1V375H175.262V368H176.046L176.256 368.854H176.312C176.489 368.537 176.699 368.294 176.942 368.126C177.194 367.949 177.511 367.86 177.894 367.86C178.165 367.86 178.468 367.907 178.804 368L178.566 369.078ZM185.628 368H186.72V366.614L187.84 366.292V368H189.744V368.98H187.84V372.858C187.84 373.343 187.901 373.689 188.022 373.894C188.144 374.09 188.349 374.188 188.638 374.188C188.881 374.188 189.086 374.165 189.254 374.118C189.422 374.062 189.609 373.992 189.814 373.908L190.066 374.762C189.814 374.883 189.539 374.981 189.24 375.056C188.942 375.131 188.62 375.168 188.274 375.168C187.705 375.168 187.304 375.009 187.07 374.692C186.837 374.365 186.72 373.824 186.72 373.068V368.98H185.628V368ZM192.934 368H194.054V375H192.934V368ZM192.696 365.872C192.696 365.657 192.766 365.475 192.906 365.326C193.056 365.167 193.242 365.088 193.466 365.088C193.69 365.088 193.882 365.167 194.04 365.326C194.199 365.475 194.278 365.657 194.278 365.872C194.278 366.087 194.199 366.264 194.04 366.404C193.882 366.544 193.69 366.614 193.466 366.614C193.242 366.614 193.056 366.544 192.906 366.404C192.766 366.264 192.696 366.087 192.696 365.872ZM201.944 375V371.038C201.944 370.665 201.926 370.343 201.888 370.072C201.86 369.792 201.8 369.559 201.706 369.372C201.613 369.185 201.478 369.045 201.3 368.952C201.132 368.859 200.908 368.812 200.628 368.812C200.199 368.812 199.84 368.943 199.55 369.204C199.27 369.465 199.074 369.792 198.962 370.184V375H197.842V368H198.626L198.836 368.854H198.892C199.144 368.555 199.434 368.313 199.76 368.126C200.096 367.93 200.53 367.832 201.062 367.832C201.51 367.832 201.874 367.921 202.154 368.098C202.444 368.266 202.668 368.565 202.826 368.994C203.041 368.63 203.335 368.345 203.708 368.14C204.091 367.935 204.52 367.832 204.996 367.832C205.388 367.832 205.72 367.879 205.99 367.972C206.261 368.056 206.485 368.21 206.662 368.434C206.84 368.658 206.966 368.961 207.04 369.344C207.124 369.727 207.166 370.212 207.166 370.8V375H206.046V370.786C206.046 370.45 206.028 370.161 205.99 369.918C205.962 369.666 205.897 369.461 205.794 369.302C205.701 369.134 205.566 369.013 205.388 368.938C205.22 368.854 204.996 368.812 204.716 368.812C204.25 368.812 203.886 368.943 203.624 369.204C203.363 369.465 203.176 369.839 203.064 370.324V375H201.944ZM210.842 368H211.962V375H210.842V368ZM210.604 365.872C210.604 365.657 210.674 365.475 210.814 365.326C210.963 365.167 211.15 365.088 211.374 365.088C211.598 365.088 211.789 365.167 211.948 365.326C212.106 365.475 212.186 365.657 212.186 365.872C212.186 366.087 212.106 366.264 211.948 366.404C211.789 366.544 211.598 366.614 211.374 366.614C211.15 366.614 210.963 366.544 210.814 366.404C210.674 366.264 210.604 366.087 210.604 365.872ZM220.244 375V371.01C220.244 370.282 220.137 369.736 219.922 369.372C219.717 368.999 219.334 368.812 218.774 368.812C218.279 368.812 217.869 368.947 217.542 369.218C217.225 369.479 217.001 369.811 216.87 370.212V375H215.75V368H216.534L216.744 368.854H216.8C217.024 368.555 217.323 368.313 217.696 368.126C218.079 367.93 218.531 367.832 219.054 367.832C219.437 367.832 219.773 367.879 220.062 367.972C220.351 368.056 220.589 368.21 220.776 368.434C220.972 368.658 221.117 368.961 221.21 369.344C221.313 369.717 221.364 370.193 221.364 370.772V375H220.244ZM230.168 375.322C230.168 376.227 229.925 376.895 229.44 377.324C228.964 377.753 228.255 377.968 227.312 377.968C226.752 377.968 226.299 377.931 225.954 377.856C225.618 377.791 225.329 377.702 225.086 377.59L225.38 376.638C225.595 376.722 225.833 376.801 226.094 376.876C226.355 376.951 226.696 376.988 227.116 376.988C227.508 376.988 227.825 376.951 228.068 376.876C228.32 376.811 228.521 376.694 228.67 376.526C228.819 376.367 228.922 376.157 228.978 375.896C229.034 375.644 229.062 375.341 229.062 374.986V374.314H229.006C228.819 374.585 228.581 374.795 228.292 374.944C228.003 375.084 227.625 375.154 227.158 375.154C226.215 375.154 225.52 374.86 225.072 374.272C224.633 373.684 224.414 372.769 224.414 371.528C224.414 370.333 224.699 369.428 225.268 368.812C225.837 368.187 226.677 367.874 227.788 367.874C228.32 367.874 228.773 367.916 229.146 368C229.529 368.084 229.869 368.182 230.168 368.294V375.322ZM227.354 374.174C227.83 374.174 228.203 374.057 228.474 373.824C228.745 373.581 228.936 373.208 229.048 372.704V369.12C228.675 368.943 228.199 368.854 227.62 368.854C226.985 368.854 226.486 369.069 226.122 369.498C225.758 369.927 225.576 370.599 225.576 371.514C225.576 371.906 225.609 372.265 225.674 372.592C225.739 372.919 225.842 373.199 225.982 373.432C226.122 373.665 226.304 373.847 226.528 373.978C226.752 374.109 227.027 374.174 227.354 374.174ZM243.352 375V371.01C243.352 370.282 243.245 369.736 243.03 369.372C242.825 368.999 242.442 368.812 241.882 368.812C241.387 368.812 240.977 368.947 240.65 369.218C240.333 369.479 240.109 369.811 239.978 370.212V375H238.858V368H239.642L239.852 368.854H239.908C240.132 368.555 240.431 368.313 240.804 368.126C241.187 367.93 241.639 367.832 242.162 367.832C242.545 367.832 242.881 367.879 243.17 367.972C243.459 368.056 243.697 368.21 243.884 368.434C244.08 368.658 244.225 368.961 244.318 369.344C244.421 369.717 244.472 370.193 244.472 370.772V375H243.352ZM253.024 374.44C252.744 374.664 252.39 374.841 251.96 374.972C251.54 375.103 251.092 375.168 250.616 375.168C250.084 375.168 249.622 375.084 249.23 374.916C248.838 374.739 248.516 374.491 248.264 374.174C248.012 373.847 247.826 373.46 247.704 373.012C247.583 372.564 247.522 372.06 247.522 371.5C247.522 370.305 247.788 369.395 248.32 368.77C248.852 368.145 249.613 367.832 250.602 367.832C250.92 367.832 251.237 367.869 251.554 367.944C251.872 368.009 252.156 368.14 252.408 368.336C252.66 368.532 252.866 368.812 253.024 369.176C253.183 369.531 253.262 370.002 253.262 370.59C253.262 370.898 253.234 371.239 253.178 371.612H248.684C248.684 372.023 248.726 372.387 248.81 372.704C248.894 373.021 249.025 373.292 249.202 373.516C249.38 373.731 249.608 373.899 249.888 374.02C250.178 374.132 250.528 374.188 250.938 374.188C251.256 374.188 251.573 374.132 251.89 374.02C252.208 373.908 252.446 373.777 252.604 373.628L253.024 374.44ZM250.616 368.812C250.066 368.812 249.622 368.957 249.286 369.246C248.96 369.535 248.764 370.03 248.698 370.73H252.17C252.17 370.021 252.035 369.526 251.764 369.246C251.494 368.957 251.111 368.812 250.616 368.812ZM261.383 374.44C261.103 374.664 260.749 374.841 260.319 374.972C259.899 375.103 259.451 375.168 258.975 375.168C258.443 375.168 257.981 375.084 257.589 374.916C257.197 374.739 256.875 374.491 256.623 374.174C256.371 373.847 256.185 373.46 256.063 373.012C255.942 372.564 255.881 372.06 255.881 371.5C255.881 370.305 256.147 369.395 256.679 368.77C257.211 368.145 257.972 367.832 258.961 367.832C259.279 367.832 259.596 367.869 259.913 367.944C260.231 368.009 260.515 368.14 260.767 368.336C261.019 368.532 261.225 368.812 261.383 369.176C261.542 369.531 261.621 370.002 261.621 370.59C261.621 370.898 261.593 371.239 261.537 371.612H257.043C257.043 372.023 257.085 372.387 257.169 372.704C257.253 373.021 257.384 373.292 257.561 373.516C257.739 373.731 257.967 373.899 258.247 374.02C258.537 374.132 258.887 374.188 259.297 374.188C259.615 374.188 259.932 374.132 260.249 374.02C260.567 373.908 260.805 373.777 260.963 373.628L261.383 374.44ZM258.975 368.812C258.425 368.812 257.981 368.957 257.645 369.246C257.319 369.535 257.123 370.03 257.057 370.73H260.529C260.529 370.021 260.394 369.526 260.123 369.246C259.853 368.957 259.47 368.812 258.975 368.812ZM270.159 372.592C270.159 373.068 270.163 373.502 270.173 373.894C270.182 374.277 270.224 374.655 270.299 375.028H269.543L269.263 374.034H269.207C269.02 374.361 268.749 374.631 268.395 374.846C268.04 375.061 267.625 375.168 267.149 375.168C266.215 375.168 265.52 374.874 265.063 374.286C264.615 373.698 264.391 372.779 264.391 371.528C264.391 370.333 264.671 369.428 265.231 368.812C265.8 368.187 266.579 367.874 267.569 367.874C267.914 367.874 268.185 367.893 268.381 367.93C268.586 367.967 268.805 368.028 269.039 368.112V365.2H270.159V372.592ZM267.331 374.188C267.807 374.188 268.185 374.067 268.465 373.824C268.745 373.572 268.936 373.194 269.039 372.69V369.218C268.871 369.087 268.679 368.994 268.465 368.938C268.25 368.882 267.965 368.854 267.611 368.854C266.967 368.854 266.463 369.069 266.099 369.498C265.735 369.918 265.553 370.595 265.553 371.528C265.553 371.911 265.581 372.265 265.637 372.592C265.702 372.919 265.805 373.199 265.945 373.432C266.085 373.665 266.267 373.852 266.491 373.992C266.724 374.123 267.004 374.188 267.331 374.188ZM276.796 373.096C276.796 372.816 276.712 372.597 276.544 372.438C276.376 372.279 276.166 372.149 275.914 372.046C275.671 371.934 275.401 371.831 275.102 371.738C274.813 371.635 274.542 371.509 274.29 371.36C274.047 371.201 273.842 371.001 273.674 370.758C273.506 370.515 273.422 370.189 273.422 369.778C273.422 369.106 273.613 368.616 273.996 368.308C274.379 367.991 274.911 367.832 275.592 367.832C276.096 367.832 276.516 367.879 276.852 367.972C277.197 368.056 277.496 368.159 277.748 368.28L277.482 369.204C277.267 369.101 277.006 369.013 276.698 368.938C276.399 368.854 276.077 368.812 275.732 368.812C275.321 368.812 275.018 368.882 274.822 369.022C274.635 369.162 274.542 369.405 274.542 369.75C274.542 369.993 274.626 370.184 274.794 370.324C274.962 370.455 275.167 370.576 275.41 370.688C275.662 370.791 275.933 370.893 276.222 370.996C276.521 371.099 276.791 371.234 277.034 371.402C277.286 371.57 277.496 371.785 277.664 372.046C277.832 372.298 277.916 372.634 277.916 373.054C277.916 373.353 277.865 373.633 277.762 373.894C277.669 374.155 277.519 374.379 277.314 374.566C277.109 374.753 276.852 374.897 276.544 375C276.245 375.112 275.891 375.168 275.48 375.168C274.948 375.168 274.495 375.117 274.122 375.014C273.749 374.911 273.436 374.79 273.184 374.65L273.52 373.698C273.735 373.819 274.015 373.931 274.36 374.034C274.705 374.137 275.055 374.188 275.41 374.188C275.811 374.188 276.143 374.109 276.404 373.95C276.665 373.791 276.796 373.507 276.796 373.096Z",
+    fill: "white"
+  })));
+}
+
+var _default = LoadingPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/SetTimerPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function SetTimerPage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = SetTimerPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/AnlogPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function AnlogPage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = AnlogPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function DigitalPage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = DigitalPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function VisualPage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = VisualPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/PausePage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function PausePage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = PausePage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../App.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactRouterDom = require("react-router-dom");
+
+var _LoadingPage = _interopRequireDefault(require("./Pages/LoadingPage"));
+
+var _SetTimerPage = _interopRequireDefault(require("./Pages/SetTimerPage"));
+
+var _AnlogPage = _interopRequireDefault(require("./Pages/AnlogPage"));
+
+var _DigitalPage = _interopRequireDefault(require("./Pages/DigitalPage"));
+
+var _VisualPage = _interopRequireDefault(require("./Pages/VisualPage"));
+
+var _PausePage = _interopRequireDefault(require("./Pages/PausePage"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function App() {
+  return _react.default.createElement("div", {
+    className: "App"
+  }, _react.default.createElement(_reactRouterDom.BrowserRouter, null, _react.default.createElement("main", null, _react.default.createElement(_reactRouterDom.Link, {
+    to: "/"
+  }), _react.default.createElement(_reactRouterDom.Routes, null, _react.default.createElement(_reactRouterDom.Route, {
+    path: "/",
+    element: _react.default.createElement(_LoadingPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/SetTimer",
+    element: _react.default.createElement(_SetTimerPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Anlog",
+    element: _react.default.createElement(_AnlogPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Digital",
+    element: _react.default.createElement(_DigitalPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Visual",
+    element: _react.default.createElement(_VisualPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Pause",
+    element: _react.default.createElement(_PausePage.default, null)
+  })))));
+}
+
+var _default = App;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./Pages/LoadingPage":"../Pages/LoadingPage.tsx","./Pages/SetTimerPage":"../Pages/SetTimerPage.tsx","./Pages/AnlogPage":"../Pages/AnlogPage.tsx","./Pages/DigitalPage":"../Pages/DigitalPage.tsx","./Pages/VisualPage":"../Pages/VisualPage.tsx","./Pages/PausePage":"../Pages/PausePage.tsx"}],"../index.tsx":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -33080,12 +35715,14 @@ var _client = _interopRequireDefault(require("react-dom/client"));
 
 require("./index.css");
 
+var _App = _interopRequireDefault(require("./App"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var root = _client.default.createRoot(document.getElementById('root'));
 
-root.render(_react.default.createElement(_react.default.StrictMode, null));
-},{"react":"../../node_modules/react/index.js","react-dom/client":"../../node_modules/react-dom/client.js","./index.css":"../index.css"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+root.render(_react.default.createElement(_react.default.StrictMode, null, _react.default.createElement(_App.default, null)));
+},{"react":"../../node_modules/react/index.js","react-dom/client":"../../node_modules/react-dom/client.js","./index.css":"../index.css","./App":"../App.tsx"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -33113,7 +35750,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54627" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57637" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

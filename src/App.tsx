@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import LoadingPage from './Pages/LoadingPage';
 import SetTimerPage from './Pages/SetTimerPage';
