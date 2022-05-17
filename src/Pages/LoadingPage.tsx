@@ -1,8 +1,9 @@
 import React from 'react'
+import { Link } from "react-router-dom";
 
 function LoadingPage() {
     return (
-        <div>
+        <Link to={"/SetTimer"}> <div>
             <svg width="375px" height="667px" viewBox="0 0 375 667" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect width="375" height="667" fill="black" />
                 <rect x="204.5" y="324" width="12" height="35" transform="rotate(-180 204.5 324)" fill="white" />
@@ -16,6 +17,7 @@ function LoadingPage() {
 
 
         </div>
+        </Link>
     );
 }
 
