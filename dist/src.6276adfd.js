@@ -35500,7 +35500,12 @@ function createSearchParams(init) {
     return memo.concat(Array.isArray(value) ? value.map(v => [key, v]) : [[key, value]]);
   }, []));
 }
-},{"react":"../../node_modules/react/index.js","history":"../../node_modules/history/index.js","react-router":"../../node_modules/react-router/index.js"}],"../img/loading.svg":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","history":"../../node_modules/history/index.js","react-router":"../../node_modules/react-router/index.js"}],"../Pages/LoadingPage.module.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../img/loading.svg":[function(require,module,exports) {
 module.exports = "/loading.951cebf8.svg";
 },{}],"../Pages/LoadingPage.tsx":[function(require,module,exports) {
 "use strict";
@@ -35514,6 +35519,8 @@ var _react = _interopRequireDefault(require("react"));
 
 var _reactRouterDom = require("react-router-dom");
 
+require("./LoadingPage.module.scss");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var logo = require("../img/loading.svg");
@@ -35521,7 +35528,9 @@ var logo = require("../img/loading.svg");
 function LoadingPage() {
   return _react.default.createElement(_reactRouterDom.Link, {
     to: "/SetTimer"
-  }, " ", _react.default.createElement("div", null, _react.default.createElement("img", {
+  }, " ", _react.default.createElement("div", {
+    className: "startBg"
+  }, _react.default.createElement("img", {
     src: logo,
     alt: "logo"
   })));
@@ -35529,7 +35538,7 @@ function LoadingPage() {
 
 var _default = LoadingPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","../img/loading.svg":"../img/loading.svg"}],"../Pages/SetTimerPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./LoadingPage.module.scss":"../Pages/LoadingPage.module.scss","../img/loading.svg":"../img/loading.svg"}],"../Pages/SetTimerPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36461,43 +36470,7 @@ var DigitalPage = function DigitalPage() {
 
 var _default = DigitalPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireDefault(require("react"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function VisualPage() {
-  return _react.default.createElement("div", null);
-}
-
-var _default = VisualPage;
-exports.default = _default;
-},{"react":"../../node_modules/react/index.js"}],"../Pages/PausePage.tsx":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireDefault(require("react"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function PausePage() {
-  return _react.default.createElement("div", null);
-}
-
-var _default = PausePage;
-exports.default = _default;
-},{"react":"../../node_modules/react/index.js"}],"../App.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../App.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36516,10 +36489,6 @@ var _SetTimerPage = _interopRequireDefault(require("./Pages/SetTimerPage"));
 var _AnlogPage = _interopRequireDefault(require("./Pages/AnlogPage"));
 
 var _DigitalPage = _interopRequireDefault(require("./Pages/DigitalPage"));
-
-var _VisualPage = _interopRequireDefault(require("./Pages/VisualPage"));
-
-var _PausePage = _interopRequireDefault(require("./Pages/PausePage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36540,18 +36509,12 @@ function App() {
   }), _react.default.createElement(_reactRouterDom.Route, {
     path: "/Digital",
     element: _react.default.createElement(_DigitalPage.default, null)
-  }), _react.default.createElement(_reactRouterDom.Route, {
-    path: "/Visual",
-    element: _react.default.createElement(_VisualPage.default, null)
-  }), _react.default.createElement(_reactRouterDom.Route, {
-    path: "/Pause",
-    element: _react.default.createElement(_PausePage.default, null)
   })))));
 }
 
 var _default = App;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./Pages/LoadingPage":"../Pages/LoadingPage.tsx","./Pages/SetTimerPage":"../Pages/SetTimerPage.tsx","./Pages/AnlogPage":"../Pages/AnlogPage.tsx","./Pages/DigitalPage":"../Pages/DigitalPage.tsx","./Pages/VisualPage":"../Pages/VisualPage.tsx","./Pages/PausePage":"../Pages/PausePage.tsx"}],"../index.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./Pages/LoadingPage":"../Pages/LoadingPage.tsx","./Pages/SetTimerPage":"../Pages/SetTimerPage.tsx","./Pages/AnlogPage":"../Pages/AnlogPage.tsx","./Pages/DigitalPage":"../Pages/DigitalPage.tsx"}],"../index.tsx":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -36595,7 +36558,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54440" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59519" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

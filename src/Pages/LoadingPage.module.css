@@ -1,0 +1,9 @@
+div .startBg {
+  background-color: black;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+div .startBg img {
+  height: 50rem; }

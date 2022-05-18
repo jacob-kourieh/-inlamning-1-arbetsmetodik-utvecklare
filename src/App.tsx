@@ -5,8 +5,7 @@ import LoadingPage from './Pages/LoadingPage';
 import SetTimerPage from './Pages/SetTimerPage';
 import AnlogPage from './Pages/AnlogPage';
 import DigitalPage from './Pages/DigitalPage';
-import VisualPage from './Pages/VisualPage';
-import PausePage from './Pages/PausePage';
+
 
 function App() {
     return (
@@ -19,8 +18,6 @@ function App() {
                         <Route path="/SetTimer" element={<SetTimerPage />} />
                         <Route path="/Anlog" element={<AnlogPage />} />
                         <Route path="/Digital" element={<DigitalPage />} />
-                        <Route path="/Visual" element={<VisualPage />} />
-                        <Route path="/Pause" element={<PausePage />} />
 
 
                     </Routes>
