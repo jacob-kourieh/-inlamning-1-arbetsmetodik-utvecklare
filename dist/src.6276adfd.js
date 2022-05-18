@@ -35587,7 +35587,7 @@ function SetTimerPage() {
     onClick: function onClick() {
       return setHours(hours - 1);
     }
-  }, "  \u25C0\uFE0E  "), _react.default.createElement("p", null, hours), _react.default.createElement("h4", {
+  }, "  \u25C0\uFE0E  "), _react.default.createElement("h1", null, hours), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setHours(hours + 1);
     }
@@ -35597,7 +35597,7 @@ function SetTimerPage() {
     onClick: function onClick() {
       return setMinutes(minutes - 1);
     }
-  }, " \u25C0\uFE0E "), _react.default.createElement("p", null, minutes), _react.default.createElement("h4", {
+  }, " \u25C0\uFE0E "), _react.default.createElement("h1", null, minutes), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setMinutes(minutes + 1);
     }
@@ -35607,7 +35607,7 @@ function SetTimerPage() {
     onClick: function onClick() {
       return setSeconds(seconds - 1);
     }
-  }, " \u25C0\uFE0E "), _react.default.createElement("p", null, seconds), _react.default.createElement("h4", {
+  }, " \u25C0\uFE0E "), _react.default.createElement("h1", null, seconds), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setSeconds(seconds + 1);
     }
@@ -36447,7 +36447,44 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../Components/Alarm.module.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../img/alarm.svg":[function(require,module,exports) {
+module.exports = "/alarm.029e63c0.svg";
+},{}],"../Components/Alarm.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+require("./Alarm.module.scss");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var alarm = require("../img/alarm.svg");
+
+function Alarm() {
+  return _react.default.createElement("section", {
+    className: "alarm-section"
+  }, _react.default.createElement("img", {
+    className: "alarmPic",
+    src: alarm,
+    alt: ""
+  }), _react.default.createElement("p", {
+    className: "timesUp"
+  }, "Times up!"));
+}
+
+var _default = Alarm;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js","./Alarm.module.scss":"../Components/Alarm.module.scss","../img/alarm.svg":"../img/alarm.svg"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36462,6 +36499,8 @@ var _easytimerReactHook = _interopRequireDefault(require("easytimer-react-hook")
 var _reactRouterDom = require("react-router-dom");
 
 require("./DigitalPage.module.scss");
+
+var _Alarm = _interopRequireDefault(require("../Components/Alarm"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36507,7 +36546,7 @@ var DigitalPage = function DigitalPage() {
     className: "digital-container"
   }, _react.default.createElement("article", null, _react.default.createElement("h2", {
     className: "any"
-  }, timer.getTimeValues().toString())), _react.default.createElement("article", {
+  }, timer.getTimeValues().toString()), time.seconds === 0 && time.minutes < 1 ? _react.default.createElement(_Alarm.default, null) : null), _react.default.createElement("article", {
     className: 'btn'
   }, _react.default.createElement("button", {
     onClick: function onClick() {
@@ -36530,7 +36569,7 @@ var DigitalPage = function DigitalPage() {
 
 var _default = DigitalPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./DigitalPage.module.scss":"../Pages/DigitalPage.module.scss"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./DigitalPage.module.scss":"../Pages/DigitalPage.module.scss","../Components/Alarm":"../Components/Alarm.tsx"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36664,7 +36703,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62126" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51230" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

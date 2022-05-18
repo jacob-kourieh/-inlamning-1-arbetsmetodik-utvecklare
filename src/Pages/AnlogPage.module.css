@@ -1,0 +1,71 @@
+/* .clockPic {
+    margin: 0 auto;
+    width: 261px;
+  } */
+.section-clock {
+  width: 18.75em;
+  height: 18.75em; }
+
+.secondStop {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  width: 1.1px; }
+
+.minutStop {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  width: 2px; }
+
+.hourPaus {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  transform: rotate(360deg);
+  transform-origin: bottom center;
+  animation: cloc 3600s linear infinite;
+  animation-name: cloc;
+  transition-property: all;
+  width: 2px;
+  animation-play-state: paused; }
+
+.secondPaus {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  transform: rotate(360deg);
+  transform-origin: bottom center;
+  animation: cloc 60s linear infinite;
+  animation-name: cloc;
+  transition-property: all;
+  width: 1.1px;
+  animation-play-state: paused; }
+
+.hourPin {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  transform: rotate(360deg);
+  transform-origin: bottom center;
+  animation: cloc 3600s linear infinite;
+  animation-name: cloc;
+  transition-property: all;
+  width: 2px; }
+
+.secondPin {
+  top: -8.3em;
+  left: -8.3em;
+  position: relative;
+  transform: rotate(360deg);
+  transform-origin: bottom center;
+  animation: cloc 60s linear infinite;
+  animation-name: cloc;
+  transition-property: all;
+  width: 1.1px; }
+
+@keyframes cloc {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }

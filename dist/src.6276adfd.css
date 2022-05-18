@@ -128,5 +128,26 @@ div {
     justify-content: space-around;
     font-size: xxx-large; }
 
+.alarm-section {
+  position: absolute;
+  top: 0;
+  z-index: 1000;
+  background-color: #bc4b4b;
+  width: 100vw;
+  height: 100vh;
+  background-size: 150%;
+  text-align: center; }
+  .alarm-section .alarmPic {
+    position: relative;
+    margin: 0;
+    height: 6rem;
+    top: calc((100vh - 95px) / 2); }
+  .alarm-section .timesUp {
+    margin-top: 3rem;
+    font-size: 2.5rem;
+    color: white;
+    position: relative;
+    top: 40%; }
+
 
 /*# sourceMappingURL=/src.6276adfd.css.map */

@@ -22,21 +22,21 @@ function SetTimerPage() {
                 <h2>Hours</h2>
                 <article className='hours'>
                     <h4 onClick={() => setHours(hours - 1)}>  ◀︎  </h4>
-                    <p>{hours}</p>
+                    <h1>{hours}</h1>
                     <h4 onClick={() => setHours(hours + 1)}>  ▶︎ </h4>
                 </article>
 
                 <h2>Minutes</h2>
                 <article className='minuts'>
                     <h4 onClick={() => setMinutes(minutes - 1)}> ◀︎ </h4>
-                    <p>{minutes}</p>
+                    <h1>{minutes}</h1>
                     <h4 onClick={() => setMinutes(minutes + 1)}> ▶︎ </h4>
                 </article>
 
                 <h2>Seconds</h2>
                 <article className='seconds'>
                     <h4 onClick={() => setSeconds(seconds - 1)} > ◀︎ </h4>
-                    <p>{seconds}</p>
+                    <h1>{seconds}</h1>
                     <h4 onClick={() => setSeconds(seconds + 1)} > ▶︎ </h4>
                 </article>
 

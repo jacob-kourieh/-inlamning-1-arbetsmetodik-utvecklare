@@ -1,0 +1,8 @@
+.digital-container {
+  display: flex;
+  flex-direction: column; }
+  .digital-container article h2 {
+    display: flex;
+    /* flex-wrap: nowrap; */
+    justify-content: space-around;
+    font-size: xxx-large; }
