@@ -53,8 +53,7 @@ div {
   } */
 .section-clock {
   width: 18.75em;
-  height: 18.75em;
-  /*  margin: 0 auto; */ }
+  height: 18.75em; }
 
 .secondStop {
   top: -8.3em;
