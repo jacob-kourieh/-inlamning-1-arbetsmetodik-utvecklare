@@ -36311,7 +36311,18 @@ var define;
 
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("react"),require("easytimer.js")):"function"==typeof define&&define.amd?define(["exports","react","easytimer.js"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self)["easytimer-react-hook"]={},e.React,e.easytimer)}(this,(function(e,t,n){"use strict";e.default=function(e){var o=void 0===e?{}:e,r=o.startValues,i=o.target,s=o.precision,u=o.countdown,a=o.updateWhenTargetAchieved,f=["days","hours","minutes","seconds","secondTenths"],c=function(e){m(e.getTimeValues().toString(f))},d=function(e){c(e.detail.timer),T(!1)},l=function(){return T(!0)},p=function(){g.off("started",d),g.off("reset",d),g.off("targetAchieved",l)},g=t.useState(new n.Timer({startValues:r,target:i,precision:s,countdown:u,callback:c}))[0],m=t.useState(g.getTimeValues().toString(f))[1],h=t.useState(!1),y=h[0],T=h[1];return t.useEffect((function(){return g.on("started",d),g.on("reset",d),a&&g.on("targetAchieved",l),function(){return p()}}),[a]),t.useEffect((function(){return function(){g.stop(),p()}}),[]),[g,y]},Object.defineProperty(e,"__esModule",{value:!0})}));
 
-},{"react":"../../node_modules/react/index.js","easytimer.js":"../../node_modules/easytimer.js/dist/easytimer.js"}],"../Pages/AnlogPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer.js":"../../node_modules/easytimer.js/dist/easytimer.js"}],"../Pages/css.module.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../img/second.png":[function(require,module,exports) {
+module.exports = "/second.66dd13d8.png";
+},{}],"../img/clock.png":[function(require,module,exports) {
+module.exports = "/clock.647547e7.png";
+},{}],"../img/minut.png":[function(require,module,exports) {
+module.exports = "/minut.969480ee.png";
+},{}],"../Pages/AnlogPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36325,11 +36336,19 @@ var _easytimerReactHook = _interopRequireDefault(require("easytimer-react-hook")
 
 var _reactRouterDom = require("react-router-dom");
 
+require("./css.module.scss");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var sekund = require("../img/second.png");
+
+var clock = require("../img/clock.png");
+
+var timpekare = require("../img/minut.png");
 
 var AnlogPage = function AnlogPage() {
   var location = (0, _reactRouterDom.useLocation)();
@@ -36342,22 +36361,27 @@ var AnlogPage = function AnlogPage() {
     },
     countdown: true
   })[0];
-  var sec = timer.getTimeValues().seconds;
-  var min = timer.getTimeValues().minutes;
-  var hr = timer.getTimeValues().hours;
 
-  var _a = (0, _react.useState)("timerShown"),
-      digitalTime = _a[0],
-      setdigitalTime = _a[1];
+  var _a = (0, _react.useState)("minutStop"),
+      hours = _a[0],
+      setHours = _a[1];
+
+  var _b = (0, _react.useState)("secondStop"),
+      sec = _b[0],
+      setSec = _b[1];
 
   function start() {
     timer.start();
+    setSec("secondPin");
+    setHours("hourPin");
   }
 
   ;
 
   function pause() {
     timer.pause();
+    setSec("secondPaus");
+    setHours("hourPaus");
   }
 
   ;
@@ -36369,15 +36393,31 @@ var AnlogPage = function AnlogPage() {
   ;
 
   function reset() {
+    timer.reset();
     window.location.reload();
   }
 
   ;
+  var sek = timer.getTimeValues().seconds;
+  var min = timer.getTimeValues().minutes;
+  var hr = timer.getTimeValues().hours;
   return _react.default.createElement("section", {
-    className: "digital-container"
-  }, _react.default.createElement("article", null, _react.default.createElement("p", {
-    className: digitalTime
-  }, timer.getTimeValues().toString())), _react.default.createElement("button", {
+    className: "containerAT"
+  }, _react.default.createElement("section", {
+    className: "section-clock"
+  }, _react.default.createElement("img", {
+    className: "clockPic",
+    src: clock,
+    alt: ""
+  }), _react.default.createElement("img", {
+    className: sec,
+    src: sekund,
+    alt: ""
+  }), _react.default.createElement("img", {
+    className: hours,
+    src: timpekare,
+    alt: ""
+  })), _react.default.createElement("button", {
     onClick: function onClick() {
       return start();
     }
@@ -36398,7 +36438,7 @@ var AnlogPage = function AnlogPage() {
 
 var _default = AnlogPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./css.module.scss":"../Pages/css.module.scss","../img/second.png":"../img/second.png","../img/clock.png":"../img/clock.png","../img/minut.png":"../img/minut.png"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36406,17 +36446,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _react = _interopRequireWildcard(require("react"));
+var _react = _interopRequireDefault(require("react"));
 
 var _easytimerReactHook = _interopRequireDefault(require("easytimer-react-hook"));
 
 var _reactRouterDom = require("react-router-dom");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 var DigitalPage = function DigitalPage() {
   var location = (0, _reactRouterDom.useLocation)();
@@ -36432,10 +36468,6 @@ var DigitalPage = function DigitalPage() {
   var sec = timer.getTimeValues().seconds;
   var min = timer.getTimeValues().minutes;
   var hr = timer.getTimeValues().hours;
-
-  var _a = (0, _react.useState)("timerShown"),
-      digitalTime = _a[0],
-      setdigitalTime = _a[1];
 
   function start() {
     timer.start();
@@ -36463,7 +36495,7 @@ var DigitalPage = function DigitalPage() {
   return _react.default.createElement("section", {
     className: "digital-container"
   }, _react.default.createElement("article", null, _react.default.createElement("p", {
-    className: digitalTime
+    className: "any"
   }, timer.getTimeValues().toString())), _react.default.createElement("button", {
     onClick: function onClick() {
       return start();
@@ -36619,7 +36651,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61742" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60292" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

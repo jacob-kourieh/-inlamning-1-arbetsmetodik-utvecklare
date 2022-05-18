@@ -1,52 +1,3 @@
-body,
-div#root {
-  background-color: black;
-  color: white;
-  font-family: "Helvetica", sans-serif;
-  margin: 2rem; }
-
-#container {
-  background-color: black; }
-  #container ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none; }
-    #container ul li {
-      display: inline-block;
-      margin: 1rem; }
-
-div .startBg {
-  background-color: black;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center; }
-  div .startBg img {
-    height: 50rem; }
-
-div {
-  display: flex;
-  flex-direction: column;
-  gap: 5em; }
-  div .setTime {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1em; }
-    div .setTime .hours,
-    div .setTime .minuts,
-    div .setTime .seconds {
-      display: flex;
-      gap: 5em; }
-  div .btn {
-    display: flex;
-    justify-content: space-around; }
-    div .btn button {
-      padding: 10px;
-      border-radius: 36px;
-      font-size: 1.3rem;
-      font-weight: 600; }
-
 /* .clockPic {
     margin: 0 auto;
     width: 261px;
@@ -119,6 +70,3 @@ div {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
-
-
-/*# sourceMappingURL=/src.6276adfd.css.map */

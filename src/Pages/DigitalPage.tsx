@@ -29,7 +29,7 @@ const DigitalPage: React.FC<times> = () => {
     const sec: number = timer.getTimeValues().seconds
     const min: number = timer.getTimeValues().minutes
     const hr: number = timer.getTimeValues().hours
-    const [digitalTime, setdigitalTime] = useState<string>("timerShown")
+
 
 
     function start() {
@@ -57,7 +57,7 @@ const DigitalPage: React.FC<times> = () => {
 
 
             <article>
-                <p className={digitalTime} >{timer.getTimeValues().toString()}</p>
+                <p className="any" >{timer.getTimeValues().toString()}</p>
             </article>
 
 
