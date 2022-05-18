@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import "./SetTimerPage.module.scss";
+
 
 function SetTimerPage() {
     const [hours, setHours] = useState<number>(0)
@@ -13,40 +15,41 @@ function SetTimerPage() {
         seconds: seconds
     }
 
+
     return (
         <div>
             <section className="setTime">
-                <h4>Hours</h4>
-                <article>
-                    <h1 onClick={() => setHours(hours - 1)}> knapp </h1>
+                <h2>Hours</h2>
+                <article className='hours'>
+                    <h4 onClick={() => setHours(hours - 1)}>  ◀︎  </h4>
                     <p>{hours}</p>
-                    <h1 onClick={() => setHours(hours + 1)}> knapp </h1>
+                    <h4 onClick={() => setHours(hours + 1)}>  ▶︎ </h4>
                 </article>
 
-                <h4>Minutes</h4>
-                <article>
-                    <h1 onClick={() => setMinutes(minutes - 1)}> knapp </h1>
+                <h2>Minutes</h2>
+                <article className='minuts'>
+                    <h4 onClick={() => setMinutes(minutes - 1)}> ◀︎ </h4>
                     <p>{minutes}</p>
-                    <h1 onClick={() => setMinutes(minutes + 1)}> knapp </h1>
+                    <h4 onClick={() => setMinutes(minutes + 1)}> ▶︎ </h4>
                 </article>
 
-                <h4>Seconds</h4>
-                <article>
-                    <h1 onClick={() => setSeconds(seconds - 1)} > knapp </h1>
+                <h2>Seconds</h2>
+                <article className='seconds'>
+                    <h4 onClick={() => setSeconds(seconds - 1)} > ◀︎ </h4>
                     <p>{seconds}</p>
-                    <h1 onClick={() => setSeconds(seconds + 1)} > knapp </h1>
+                    <h4 onClick={() => setSeconds(seconds + 1)} > ▶︎ </h4>
                 </article>
 
             </section>
 
 
-            <section>
+            <section className='btn'>
                 <Link state={setTime} to={"/Anlog"}>
-                    <h1>to anlog</h1>
+                    <button>To Anlog</button>
                 </Link>
 
                 <Link state={setTime} to={"/Digital"}>
-                    <h1>to digital</h1>
+                    <button>To Digital</button>
                 </Link>
             </section>
         </div>

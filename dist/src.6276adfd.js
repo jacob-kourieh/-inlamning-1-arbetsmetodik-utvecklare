@@ -35538,7 +35538,12 @@ function LoadingPage() {
 
 var _default = LoadingPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./LoadingPage.module.scss":"../Pages/LoadingPage.module.scss","../img/loading.svg":"../img/loading.svg"}],"../Pages/SetTimerPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./LoadingPage.module.scss":"../Pages/LoadingPage.module.scss","../img/loading.svg":"../img/loading.svg"}],"../Pages/SetTimerPage.module.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../Pages/SetTimerPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -35549,6 +35554,8 @@ exports.default = void 0;
 var _react = _interopRequireWildcard(require("react"));
 
 var _reactRouterDom = require("react-router-dom");
+
+require("./SetTimerPage.module.scss");
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -35574,42 +35581,50 @@ function SetTimerPage() {
   };
   return _react.default.createElement("div", null, _react.default.createElement("section", {
     className: "setTime"
-  }, _react.default.createElement("h4", null, "Hours"), _react.default.createElement("article", null, _react.default.createElement("h1", {
+  }, _react.default.createElement("h2", null, "Hours"), _react.default.createElement("article", {
+    className: 'hours'
+  }, _react.default.createElement("h4", {
     onClick: function onClick() {
       return setHours(hours - 1);
     }
-  }, " knapp "), _react.default.createElement("p", null, hours), _react.default.createElement("h1", {
+  }, "  \u25C0\uFE0E  "), _react.default.createElement("p", null, hours), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setHours(hours + 1);
     }
-  }, " knapp ")), _react.default.createElement("h4", null, "Minutes"), _react.default.createElement("article", null, _react.default.createElement("h1", {
+  }, "  \u25B6\uFE0E ")), _react.default.createElement("h2", null, "Minutes"), _react.default.createElement("article", {
+    className: 'minuts'
+  }, _react.default.createElement("h4", {
     onClick: function onClick() {
       return setMinutes(minutes - 1);
     }
-  }, " knapp "), _react.default.createElement("p", null, minutes), _react.default.createElement("h1", {
+  }, " \u25C0\uFE0E "), _react.default.createElement("p", null, minutes), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setMinutes(minutes + 1);
     }
-  }, " knapp ")), _react.default.createElement("h4", null, "Seconds"), _react.default.createElement("article", null, _react.default.createElement("h1", {
+  }, " \u25B6\uFE0E ")), _react.default.createElement("h2", null, "Seconds"), _react.default.createElement("article", {
+    className: 'seconds'
+  }, _react.default.createElement("h4", {
     onClick: function onClick() {
       return setSeconds(seconds - 1);
     }
-  }, " knapp "), _react.default.createElement("p", null, seconds), _react.default.createElement("h1", {
+  }, " \u25C0\uFE0E "), _react.default.createElement("p", null, seconds), _react.default.createElement("h4", {
     onClick: function onClick() {
       return setSeconds(seconds + 1);
     }
-  }, " knapp "))), _react.default.createElement("section", null, _react.default.createElement(_reactRouterDom.Link, {
+  }, " \u25B6\uFE0E "))), _react.default.createElement("section", {
+    className: 'btn'
+  }, _react.default.createElement(_reactRouterDom.Link, {
     state: setTime,
     to: "/Anlog"
-  }, _react.default.createElement("h1", null, "to anlog")), _react.default.createElement(_reactRouterDom.Link, {
+  }, _react.default.createElement("button", null, "To Anlog")), _react.default.createElement(_reactRouterDom.Link, {
     state: setTime,
     to: "/Digital"
-  }, _react.default.createElement("h1", null, "to digital"))));
+  }, _react.default.createElement("button", null, "To Digital"))));
 }
 
 var _default = SetTimerPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../../node_modules/easytimer.js/dist/easytimer.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./SetTimerPage.module.scss":"../Pages/SetTimerPage.module.scss"}],"../../node_modules/easytimer.js/dist/easytimer.js":[function(require,module,exports) {
 var define;
 var global = arguments[3];
 /**
@@ -36470,7 +36485,43 @@ var DigitalPage = function DigitalPage() {
 
 var _default = DigitalPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../App.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function VisualPage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = VisualPage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../Pages/PausePage.tsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function PausePage() {
+  return _react.default.createElement("div", null);
+}
+
+var _default = PausePage;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js"}],"../App.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36489,6 +36540,10 @@ var _SetTimerPage = _interopRequireDefault(require("./Pages/SetTimerPage"));
 var _AnlogPage = _interopRequireDefault(require("./Pages/AnlogPage"));
 
 var _DigitalPage = _interopRequireDefault(require("./Pages/DigitalPage"));
+
+var _VisualPage = _interopRequireDefault(require("./Pages/VisualPage"));
+
+var _PausePage = _interopRequireDefault(require("./Pages/PausePage"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36509,12 +36564,18 @@ function App() {
   }), _react.default.createElement(_reactRouterDom.Route, {
     path: "/Digital",
     element: _react.default.createElement(_DigitalPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Visual",
+    element: _react.default.createElement(_VisualPage.default, null)
+  }), _react.default.createElement(_reactRouterDom.Route, {
+    path: "/Pause",
+    element: _react.default.createElement(_PausePage.default, null)
   })))));
 }
 
 var _default = App;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./Pages/LoadingPage":"../Pages/LoadingPage.tsx","./Pages/SetTimerPage":"../Pages/SetTimerPage.tsx","./Pages/AnlogPage":"../Pages/AnlogPage.tsx","./Pages/DigitalPage":"../Pages/DigitalPage.tsx"}],"../index.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./Pages/LoadingPage":"../Pages/LoadingPage.tsx","./Pages/SetTimerPage":"../Pages/SetTimerPage.tsx","./Pages/AnlogPage":"../Pages/AnlogPage.tsx","./Pages/DigitalPage":"../Pages/DigitalPage.tsx","./Pages/VisualPage":"../Pages/VisualPage.tsx","./Pages/PausePage":"../Pages/PausePage.tsx"}],"../index.tsx":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -36558,7 +36619,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59519" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61742" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

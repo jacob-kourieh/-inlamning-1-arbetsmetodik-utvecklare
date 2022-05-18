@@ -24,5 +24,28 @@ div .startBg {
   div .startBg img {
     height: 50rem; }
 
+div {
+  display: flex;
+  flex-direction: column;
+  gap: 5em; }
+  div .setTime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em; }
+    div .setTime .hours,
+    div .setTime .minuts,
+    div .setTime .seconds {
+      display: flex;
+      gap: 5em; }
+  div .btn {
+    display: flex;
+    justify-content: space-around; }
+    div .btn button {
+      padding: 10px;
+      border-radius: 36px;
+      font-size: 1.3rem;
+      font-weight: 600; }
+
 
 /*# sourceMappingURL=/src.6276adfd.css.map */
