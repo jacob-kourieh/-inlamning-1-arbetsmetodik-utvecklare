@@ -1,7 +1,7 @@
 import React from 'react'
 import useTimer from 'easytimer-react-hook';
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import "./DigitalPage.module.scss";
 
 interface times {
     countdown?: boolean,
@@ -57,15 +57,15 @@ const DigitalPage: React.FC<times> = () => {
 
 
             <article>
-                <p className="any" >{timer.getTimeValues().toString()}</p>
+                <h2 className="any" >{timer.getTimeValues().toString()}</h2>
             </article>
 
-
-            <button onClick={() => start()}>start</button>
-            <button onClick={() => pause()}>pause</button>
-            <button onClick={() => stop()}>stop</button>
-            <button onClick={() => reset()}>reset</button>
-
+            <article className='btn'>
+                <button onClick={() => start()}>start</button>
+                <button onClick={() => pause()}>pause</button>
+                <button onClick={() => stop()}>stop</button>
+                <button onClick={() => reset()}>reset</button>
+            </article>
 
         </section>
 

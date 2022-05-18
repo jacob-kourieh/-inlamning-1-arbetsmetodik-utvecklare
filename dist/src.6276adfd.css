@@ -52,25 +52,25 @@ div {
     width: 261px;
   } */
 .section-clock {
-  width: 300px;
-  height: 300px;
+  width: 18.75em;
+  height: 18.75em;
   /*  margin: 0 auto; */ }
 
 .secondStop {
-  top: -131px;
-  left: -131px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   width: 1.1px; }
 
 .minutStop {
-  top: -130px;
-  left: -133px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   width: 2px; }
 
 .hourPaus {
-  top: -130px;
-  left: -133px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
@@ -81,8 +81,8 @@ div {
   animation-play-state: paused; }
 
 .secondPaus {
-  top: -131px;
-  left: -131px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
@@ -93,8 +93,8 @@ div {
   animation-play-state: paused; }
 
 .hourPin {
-  top: -130px;
-  left: -133px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
@@ -104,8 +104,8 @@ div {
   width: 2px; }
 
 .secondPin {
-  top: -131px;
-  left: -131px;
+  top: -8.3em;
+  left: -8.3em;
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
@@ -119,6 +119,15 @@ div {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
+.digital-container {
+  display: flex;
+  flex-direction: column; }
+  .digital-container article h2 {
+    display: flex;
+    /* flex-wrap: nowrap; */
+    justify-content: space-around;
+    font-size: xxx-large; }
 
 
 /*# sourceMappingURL=/src.6276adfd.css.map */

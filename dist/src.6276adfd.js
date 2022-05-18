@@ -36311,7 +36311,7 @@ var define;
 
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("react"),require("easytimer.js")):"function"==typeof define&&define.amd?define(["exports","react","easytimer.js"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self)["easytimer-react-hook"]={},e.React,e.easytimer)}(this,(function(e,t,n){"use strict";e.default=function(e){var o=void 0===e?{}:e,r=o.startValues,i=o.target,s=o.precision,u=o.countdown,a=o.updateWhenTargetAchieved,f=["days","hours","minutes","seconds","secondTenths"],c=function(e){m(e.getTimeValues().toString(f))},d=function(e){c(e.detail.timer),T(!1)},l=function(){return T(!0)},p=function(){g.off("started",d),g.off("reset",d),g.off("targetAchieved",l)},g=t.useState(new n.Timer({startValues:r,target:i,precision:s,countdown:u,callback:c}))[0],m=t.useState(g.getTimeValues().toString(f))[1],h=t.useState(!1),y=h[0],T=h[1];return t.useEffect((function(){return g.on("started",d),g.on("reset",d),a&&g.on("targetAchieved",l),function(){return p()}}),[a]),t.useEffect((function(){return function(){g.stop(),p()}}),[]),[g,y]},Object.defineProperty(e,"__esModule",{value:!0})}));
 
-},{"react":"../../node_modules/react/index.js","easytimer.js":"../../node_modules/easytimer.js/dist/easytimer.js"}],"../Pages/css.module.scss":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer.js":"../../node_modules/easytimer.js/dist/easytimer.js"}],"../Pages/AnlogPage.module.scss":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -36336,7 +36336,7 @@ var _easytimerReactHook = _interopRequireDefault(require("easytimer-react-hook")
 
 var _reactRouterDom = require("react-router-dom");
 
-require("./css.module.scss");
+require("./AnlogPage.module.scss");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36388,6 +36388,8 @@ var AnlogPage = function AnlogPage() {
 
   function stop() {
     timer.stop();
+    setSec("secondPaus");
+    setHours("hourPaus");
   }
 
   ;
@@ -36403,7 +36405,7 @@ var AnlogPage = function AnlogPage() {
   var hr = timer.getTimeValues().hours;
   return _react.default.createElement("section", {
     className: "containerAT"
-  }, _react.default.createElement("section", {
+  }, _react.default.createElement("article", {
     className: "section-clock"
   }, _react.default.createElement("img", {
     className: "clockPic",
@@ -36417,7 +36419,9 @@ var AnlogPage = function AnlogPage() {
     className: hours,
     src: timpekare,
     alt: ""
-  })), _react.default.createElement("button", {
+  })), _react.default.createElement("article", {
+    className: 'btn'
+  }, _react.default.createElement("button", {
     onClick: function onClick() {
       return start();
     }
@@ -36433,12 +36437,17 @@ var AnlogPage = function AnlogPage() {
     onClick: function onClick() {
       return reset();
     }
-  }, "reset"));
+  }, "reset")));
 };
 
 var _default = AnlogPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./css.module.scss":"../Pages/css.module.scss","../img/second.png":"../img/second.png","../img/clock.png":"../img/clock.png","../img/minut.png":"../img/minut.png"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./AnlogPage.module.scss":"../Pages/AnlogPage.module.scss","../img/second.png":"../img/second.png","../img/clock.png":"../img/clock.png","../img/minut.png":"../img/minut.png"}],"../Pages/DigitalPage.module.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36451,6 +36460,8 @@ var _react = _interopRequireDefault(require("react"));
 var _easytimerReactHook = _interopRequireDefault(require("easytimer-react-hook"));
 
 var _reactRouterDom = require("react-router-dom");
+
+require("./DigitalPage.module.scss");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36494,9 +36505,11 @@ var DigitalPage = function DigitalPage() {
   ;
   return _react.default.createElement("section", {
     className: "digital-container"
-  }, _react.default.createElement("article", null, _react.default.createElement("p", {
+  }, _react.default.createElement("article", null, _react.default.createElement("h2", {
     className: "any"
-  }, timer.getTimeValues().toString())), _react.default.createElement("button", {
+  }, timer.getTimeValues().toString())), _react.default.createElement("article", {
+    className: 'btn'
+  }, _react.default.createElement("button", {
     onClick: function onClick() {
       return start();
     }
@@ -36512,12 +36525,12 @@ var DigitalPage = function DigitalPage() {
     onClick: function onClick() {
       return reset();
     }
-  }, "reset"));
+  }, "reset")));
 };
 
 var _default = DigitalPage;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","easytimer-react-hook":"../../node_modules/easytimer-react-hook/dist/index.min.js","react-router-dom":"../../node_modules/react-router-dom/index.js","./DigitalPage.module.scss":"../Pages/DigitalPage.module.scss"}],"../Pages/VisualPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36651,7 +36664,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60292" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62126" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

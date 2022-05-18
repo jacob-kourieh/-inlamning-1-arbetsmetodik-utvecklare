@@ -2,6 +2,7 @@ import React from 'react'
 import useTimer from 'easytimer-react-hook';
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import "./AnlogPage.module.scss";
 
 const sekund = require("../img/second.png") as string;
 const clock = require("../img/clock.png") as string;
@@ -52,6 +53,8 @@ const AnlogPage: React.FC<times> = () => {
 
     function stop() {
         timer.stop();
+        setSec("secondPaus")
+        setHours("hourPaus")
 
     };
 

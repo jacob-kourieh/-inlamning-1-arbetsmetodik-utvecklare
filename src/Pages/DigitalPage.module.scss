@@ -1,0 +1,13 @@
+.digital-container {
+    display: flex;
+    flex-direction: column;
+
+    article {
+        h2 {
+            display: flex;
+            /* flex-wrap: nowrap; */
+            justify-content: space-around;
+            font-size: xxx-large;
+        }
+    }
+}
