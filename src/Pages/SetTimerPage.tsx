@@ -13,7 +13,6 @@ function SetTimerPage() {
         seconds: seconds
     }
 
-
     return (
         <div>
             <section className="setTime">
