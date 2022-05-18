@@ -2,6 +2,7 @@ import React from 'react'
 import useTimer from 'easytimer-react-hook';
 import { useLocation } from "react-router-dom";
 import "./DigitalPage.module.scss";
+import Alarm from '../Components/Alarm';
 
 interface times {
     countdown?: boolean,
@@ -58,6 +59,11 @@ const DigitalPage: React.FC<times> = () => {
 
             <article>
                 <h2 className="any" >{timer.getTimeValues().toString()}</h2>
+                {
+                    time.seconds === 0 &&
+                        time.minutes < 1 ? (
+                        <Alarm />
+                    ) : null}
             </article>
 
             <article className='btn'>
