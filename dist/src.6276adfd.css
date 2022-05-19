@@ -136,6 +136,7 @@ div {
   background-color: black;
   background-image: url("/AlarmBg.b6d0d7fc.svg");
   background-position: center;
+  background-repeat: no-repeat;
   background-size: 150%;
   position: absolute;
   top: 0;
@@ -153,6 +154,15 @@ div {
     margin-top: 50px;
     top: 40%;
     color: white; }
+  .alarm-section button {
+    position: relative;
+    margin-top: 390px;
+    /* bottom: 20%; */
+    /* left: 30%; */
+    height: 40px;
+    width: 144px;
+    font-weight: 900;
+    border-radius: 30px; }
 
 
 /*# sourceMappingURL=/src.6276adfd.css.map */
