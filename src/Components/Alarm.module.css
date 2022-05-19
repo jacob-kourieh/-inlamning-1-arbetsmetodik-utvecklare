@@ -1,0 +1,23 @@
+.alarm-section {
+  background-color: black;
+  background-image: url("../img/AlarmBg.svg");
+  background-position: center;
+  background-size: 150%;
+  position: absolute;
+  top: 0;
+  z-index: 1000;
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+}
+.alarm-section .alarmPic {
+  position: relative;
+  height: 6rem;
+  top: 40%;
+}
+.alarm-section .timesUp {
+  position: relative;
+  margin-top: 50px;
+  top: 40%;
+  color: white;
+}/*# sourceMappingURL=Alarm.module.css.map */

@@ -7,13 +7,17 @@ div#root {
 
 #container {
   background-color: black; }
-  #container ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none; }
-    #container ul li {
-      display: inline-block;
-      margin: 1rem; }
+
+#container ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+
+#container ul li {
+  display: inline-block;
+  margin: 1rem; }
+
+
 
 div .startBg {
   background-color: black;
@@ -129,25 +133,26 @@ div {
     font-size: xxx-large; }
 
 .alarm-section {
+  background-color: black;
+  background-image: url("/AlarmBg.b6d0d7fc.svg");
+  background-position: center;
+  background-size: 150%;
   position: absolute;
   top: 0;
+  right: 1px;
   z-index: 1000;
-  background-color: #bc4b4b;
+  text-align: center;
   width: 100vw;
-  height: 100vh;
-  background-size: 150%;
-  text-align: center; }
+  height: 100vh; }
   .alarm-section .alarmPic {
     position: relative;
-    margin: 0;
     height: 6rem;
-    top: calc((100vh - 95px) / 2); }
-  .alarm-section .timesUp {
-    margin-top: 3rem;
-    font-size: 2.5rem;
-    color: white;
-    position: relative;
     top: 40%; }
+  .alarm-section .timesUp {
+    position: relative;
+    margin-top: 50px;
+    top: 40%;
+    color: white; }
 
 
 /*# sourceMappingURL=/src.6276adfd.css.map */

@@ -60,14 +60,14 @@ const DigitalPage: React.FC<times> = () => {
             <article>
                 <h2 className="any" >{timer.getTimeValues().toString()}</h2>
                 {
-                    time.seconds === 0 &&
-                        time.minutes < 1 ? (
+                    sec === 0 &&
+                        min < 1 ? (
                         <Alarm />
                     ) : null}
             </article>
 
             <article className='btn'>
-                <button onClick={() => start()}>start</button>
+                <button onClick={() => start()}>start </button>
                 <button onClick={() => pause()}>pause</button>
                 <button onClick={() => stop()}>stop</button>
                 <button onClick={() => reset()}>reset</button>

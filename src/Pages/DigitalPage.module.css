@@ -1,8 +1,11 @@
 .digital-container {
   display: flex;
   flex-direction: column; }
-  .digital-container article h2 {
-    display: flex;
-    /* flex-wrap: nowrap; */
-    justify-content: space-around;
-    font-size: xxx-large; }
+
+.digital-container article h2 {
+  display: flex;
+  /* flex-wrap: nowrap; */
+  justify-content: space-around;
+  font-size: xxx-large; }
+
+/*# sourceMappingURL=DigitalPage.module.css.map */

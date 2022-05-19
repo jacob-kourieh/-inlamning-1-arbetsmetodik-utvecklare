@@ -24,10 +24,13 @@
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
+  -webkit-animation: cloc 3600s linear infinite;
   animation: cloc 3600s linear infinite;
+  -webkit-animation-name: cloc;
   animation-name: cloc;
   transition-property: all;
   width: 2px;
+  -webkit-animation-play-state: paused;
   animation-play-state: paused; }
 
 .secondPaus {
@@ -36,10 +39,13 @@
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
+  -webkit-animation: cloc 60s linear infinite;
   animation: cloc 60s linear infinite;
+  -webkit-animation-name: cloc;
   animation-name: cloc;
   transition-property: all;
   width: 1.1px;
+  -webkit-animation-play-state: paused;
   animation-play-state: paused; }
 
 .hourPin {
@@ -48,7 +54,9 @@
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
+  -webkit-animation: cloc 3600s linear infinite;
   animation: cloc 3600s linear infinite;
+  -webkit-animation-name: cloc;
   animation-name: cloc;
   transition-property: all;
   width: 2px; }
@@ -59,13 +67,23 @@
   position: relative;
   transform: rotate(360deg);
   transform-origin: bottom center;
+  -webkit-animation: cloc 60s linear infinite;
   animation: cloc 60s linear infinite;
+  -webkit-animation-name: cloc;
   animation-name: cloc;
   transition-property: all;
   width: 1.1px; }
+
+@-webkit-keyframes cloc {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
 
 @keyframes cloc {
   from {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
+/*# sourceMappingURL=AnlogPage.module.css.map */
