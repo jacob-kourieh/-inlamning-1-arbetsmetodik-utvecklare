@@ -36466,6 +36466,8 @@ var _react = _interopRequireDefault(require("react"));
 
 require("./Alarm.module.scss");
 
+var _reactRouterDom = require("react-router-dom");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var alarm = require("../img/alarm.svg");
@@ -36479,12 +36481,14 @@ function Alarm() {
     alt: ""
   }), _react.default.createElement("p", {
     className: "timesUp"
-  }, "Times up!"));
+  }, "Times up!"), _react.default.createElement(_reactRouterDom.Link, {
+    to: "/SetTimer"
+  }, _react.default.createElement("button", null, "SET NEW TIMER")));
 }
 
 var _default = Alarm;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","./Alarm.module.scss":"../Components/Alarm.module.scss","../img/alarm.svg":"../img/alarm.svg"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","./Alarm.module.scss":"../Components/Alarm.module.scss","react-router-dom":"../../node_modules/react-router-dom/index.js","../img/alarm.svg":"../img/alarm.svg"}],"../Pages/DigitalPage.tsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
